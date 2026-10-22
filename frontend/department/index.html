@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="en" data-portal="electrical">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Department Queue &bull; Smart Campus Maintenance</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/dashboard.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Top Navigation Bar -->
+  <nav class="navbar" aria-label="Department Navigation">
+    <div class="container navbar-inner" style="max-width: 100%; padding: 0 1.5rem;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button 
+          type="button" 
+          class="sidebar-toggle-btn" 
+          id="deptSidebarToggle" 
+          aria-label="Toggle navigation sidebar" 
+          title="Toggle navigation sidebar"
+          onclick="toggleSidebar()"
+          style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: var(--portal-header-text);"
+        >
+          <span data-icon="menu" data-icon-size="16"></span>
+        </button>
+        <a href="index.html" class="navbar-brand">
+          <div class="brand-icon-wrap" id="navDeptIconWrap" data-icon="zap" data-icon-size="16"></div>
+          <span>Smart Campus</span>
+        </a>
+      </div>
+      <ul class="navbar-nav">
+        <li>
+          <span style="font-size: 0.8rem; color: var(--portal-header-subtext); display: flex; align-items: center; gap: 5px;">
+            <span data-icon="user" data-icon-size="13"></span>
+            <span id="staffUserLabel">Department Lead</span>
+          </span>
+        </li>
+        <li>
+          <a href="#" onclick="authManager.logout('../login.html'); return false;" title="Sign out of portal">
+            <span data-icon="log-out" data-icon-size="14"></span>
+            <span>Logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Portal Layout with Collapsible Sidebar -->
+  <div class="portal-layout-wrapper">
+    <!-- Mobile Backdrop for Sidebar -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar(false)"></div>
+
+    <!-- Collapsible Department Sidebar (8 items in exact required order) -->
+    <aside class="portal-sidebar" id="deptSidebar" aria-label="Department Navigation">
+      <div class="sidebar-header">
+        <span class="sidebar-title">Navigation</span>
+        <button 
+          type="button" 
+          class="sidebar-toggle-btn" 
+          id="sidebarToggleBtn" 
+          onclick="toggleSidebar()" 
+          aria-label="Collapse navigation sidebar" 
+          title="Collapse or expand sidebar"
+        >
+          <span data-icon="chevron-left" data-icon-size="14"></span>
+        </button>
+      </div>
+      <ul class="sidebar-nav">
+        <!-- 1. Dashboard -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#dashboard" 
+            class="sidebar-link active" 
+            id="navDeptDashboard" 
+            data-view="dashboard" 
+            title="Dashboard"
+            onclick="switchDeptView('dashboard'); return false;"
+          >
+            <span class="sidebar-icon" data-icon="clipboard-list" data-icon-size="16"></span>
+            <span class="sidebar-text">Dashboard</span>
+          </a>
+        </li>
+
+        <!-- 2. Newly Submitted -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#newly_submitted" 
+            class="sidebar-link" 
+            id="navDeptSubmitted" 
+            data-view="SUBMITTED" 
+            title="Newly Submitted"
+            onclick="switchDeptView('SUBMITTED'); return false;"
+          >
+            <span class="sidebar-icon" data-icon="inbox" data-icon-size="16"></span>
+            <span class="sidebar-text">Newly Submitted</span>
+          </a>
+        </li>
+
+        <!-- 3. Under Review -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#under_review" 
+            class="sidebar-link" 
+            id="navDeptReview" 
+            data-view="UNDER_REVIEW" 
+            title="Under Review"
+            onclick="switchDeptView('UNDER_REVIEW'); return false;"
+          >
+            <span class="sidebar-icon" data-icon="clock" data-icon-size="16"></span>
+            <span class="sidebar-text">Under Review</span>
+          </a>
+        </li>
+
+        <!-- 4. In Progress -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#in_progress" 
+            class="sidebar-link" 
+            id="navDeptProgress" 
+            data-view="IN_PROGRESS" 
+            title="In Progress"
+            onclick="switchDeptView('IN_PROGRESS'); return false;"
+          >
+            <span class="sidebar-icon" data-icon="wrench" data-icon-size="16"></span>
+            <span class="sidebar-text">In Progress</span>
+          </a>
+        </li>
+
+        <!-- 5. Awaiting Student Verification -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#awaiting_verification" 
+            class="sidebar-link" 
+            id="navDeptVerification" 
+            data-view="AWAITING_VERIFICATION" 
+            title="Awaiting Student Verification"
+            onclick="switchDeptView('AWAITING_VERIFICATION'); return false;"
+          >
+            <span class="sidebar-icon" data-icon="check-circle-2" data-icon-size="16"></span>
+            <span class="sidebar-text">Awaiting Student Verification</span>
+          </a>
+        </li>
+
+        <!-- 6. Resolved -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#resolved" 
+            class="sidebar-link" 
+            id="navDeptResolved" 
+            data-view="RESOLVED" 
+            title="Resolved"
+            onclick="switchDeptView('RESOLVED'); return false;"
+          >
+            <span class="sidebar-icon" data-icon="check" data-icon-size="16"></span>
+            <span class="sidebar-text">Resolved</span>
+          </a>
+        </li>
+
+        <!-- 7. Closed -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#closed" 
+            class="sidebar-link" 
+            id="navDeptClosed" 
+            data-view="CLOSED" 
+            title="Closed"
+            onclick="switchDeptView('CLOSED'); return false;"
+          >
+            <span class="sidebar-icon" data-icon="lock" data-icon-size="16"></span>
+            <span class="sidebar-text">Closed</span>
+          </a>
+        </li>
+
+        <!-- 8. Declined -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#declined" 
+            class="sidebar-link" 
+            id="navDeptDeclined" 
+            data-view="DECLINED" 
+            title="Declined"
+            onclick="switchDeptView('DECLINED'); return false;"
+          >
+            <span class="sidebar-icon" data-icon="x-circle" data-icon-size="16"></span>
+            <span class="sidebar-text">Declined</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="portal-main-wrap">
+
+      <!-- Themed Department Header: Main Heading Centered Horizontally -->
+      <header class="dept-page-header">
+        <div class="dept-heading-wrap">
+          <div class="dept-heading-icon" id="deptHeaderIcon" data-icon="zap" data-icon-size="20"></div>
+          <h1 id="deptHeading" class="dept-centered-heading">Electrical Department Maintenance</h1>
+        </div>
+        <div class="dept-header-actions">
+          <button type="button" class="btn btn-outline btn-sm" onclick="loadDepartmentComplaints()" title="Refresh ticket queue">
+            <span data-icon="refresh-cw" data-icon-size="14"></span>
+            <span>Refresh</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Department Metrics Grid (Shown ONLY on Dashboard) -->
+      <div class="metrics-grid-dept" id="deptMetricsGrid" role="region" aria-label="Department Queue Metrics">
+        <!-- 1. Total Assigned Queue -->
+        <div class="metric-card active" id="deptCardTotal" data-dept-filter="ALL" role="button" tabindex="0" title="Click to view all assigned tickets">
+          <span class="metric-active-badge" aria-hidden="true"></span>
+          <div class="metric-card-top">
+            <div class="metric-info">
+              <h4>Total Assigned</h4>
+            </div>
+            <div class="metric-icon-small" data-icon="clipboard-list" data-icon-size="14"></div>
+          </div>
+          <div class="metric-value" id="deptMetricTotal">0</div>
+        </div>
+
+        <!-- 2. Newly Submitted -->
+        <div class="metric-card" id="deptCardNew" data-dept-filter="SUBMITTED" role="button" tabindex="0" title="Click to view newly submitted tickets">
+          <span class="metric-active-badge" aria-hidden="true"></span>
+          <div class="metric-card-top">
+            <div class="metric-info">
+              <h4>Newly Submitted</h4>
+            </div>
+            <div class="metric-icon-small" data-icon="inbox" data-icon-size="14"></div>
+          </div>
+          <div class="metric-value" id="deptMetricNew">0</div>
+        </div>
+
+        <!-- 3. Under Review -->
+        <div class="metric-card" id="deptCardReview" data-dept-filter="UNDER_REVIEW" role="button" tabindex="0" title="Click to view under review tickets">
+          <span class="metric-active-badge" aria-hidden="true"></span>
+          <div class="metric-card-top">
+            <div class="metric-info">
+              <h4>Under Review</h4>
+            </div>
+            <div class="metric-icon-small" data-icon="clock" data-icon-size="14"></div>
+          </div>
+          <div class="metric-value" id="deptMetricReview">0</div>
+        </div>
+
+        <!-- 4. Active In-Progress -->
+        <div class="metric-card" id="deptCardProgress" data-dept-filter="IN_PROGRESS" role="button" tabindex="0" title="Click to view active in-progress tickets">
+          <span class="metric-active-badge" aria-hidden="true"></span>
+          <div class="metric-card-top">
+            <div class="metric-info">
+              <h4>In Progress</h4>
+            </div>
+            <div class="metric-icon-small" data-icon="wrench" data-icon-size="14"></div>
+          </div>
+          <div class="metric-value" id="deptMetricProgress">0</div>
+        </div>
+
+        <!-- 5. Awaiting Student Verification -->
+        <div class="metric-card" id="deptCardVerification" data-dept-filter="AWAITING_VERIFICATION" role="button" tabindex="0" title="Click to view tickets awaiting student verification">
+          <span class="metric-active-badge" aria-hidden="true"></span>
+          <div class="metric-card-top">
+            <div class="metric-info">
+              <h4>Verification</h4>
+            </div>
+            <div class="metric-icon-small" data-icon="check-circle-2" data-icon-size="14"></div>
+          </div>
+          <div class="metric-value" id="deptMetricVerification">0</div>
+        </div>
+
+        <!-- 6. Resolved -->
+        <div class="metric-card" id="deptCardResolved" data-dept-filter="RESOLVED" role="button" tabindex="0" title="Click to view resolved tickets">
+          <span class="metric-active-badge" aria-hidden="true"></span>
+          <div class="metric-card-top">
+            <div class="metric-info">
+              <h4>Resolved</h4>
+            </div>
+            <div class="metric-icon-small" data-icon="check" data-icon-size="14"></div>
+          </div>
+          <div class="metric-value" id="deptMetricResolved">0</div>
+        </div>
+
+        <!-- 7. Declined -->
+        <div class="metric-card" id="deptCardDeclined" data-dept-filter="DECLINED" role="button" tabindex="0" title="Click to view declined tickets">
+          <span class="metric-active-badge" aria-hidden="true"></span>
+          <div class="metric-card-top">
+            <div class="metric-info">
+              <h4>Declined</h4>
+            </div>
+            <div class="metric-icon-small" data-icon="x-circle" data-icon-size="14"></div>
+          </div>
+          <div class="metric-value" id="deptMetricDeclined">0</div>
+        </div>
+      </div>
+
+      <!-- Toolbar Filters (Search + Campus Block) -->
+      <div class="toolbar">
+        <div class="toolbar-filters">
+          <div style="position: relative; flex: 1; max-width: 280px;">
+            <input 
+              type="search" 
+              id="deptSearchFilter" 
+              class="form-control" 
+              placeholder="Search ticket ID or location..."
+              style="padding-left: 32px;"
+            >
+            <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--color-slate-400); pointer-events: none;" data-icon="search" data-icon-size="14"></span>
+          </div>
+
+          <select id="deptBlockFilter" class="form-select">
+            <option value="">All Campus Blocks</option>
+            <option value="Academic Block">Academic Block</option>
+            <option value="Civil Block">Civil Block</option>
+            <option value="Mechanical Block">Mechanical Block</option>
+            <option value="Block 3">Block 3</option>
+            <option value="Electronics Block">Electronics Block</option>
+          </select>
+        </div>
+
+        <div class="toolbar-actions">
+          <span id="deptQueueCount">Queue: 0 complaints</span>
+        </div>
+      </div>
+
+      <!-- Department Operations Table Container -->
+      <div class="table-responsive">
+        <table class="table" id="deptComplaintsTable">
+          <thead>
+            <tr>
+              <th>Ticket ID</th>
+              <th>Submitted</th>
+              <th>Location</th>
+              <th>Problem Summary</th>
+              <th>Priority</th>
+              <th>Current Status</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="deptTableBody">
+            <!-- Dynamically populated from Spring Boot API -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state-panel" id="deptEmptyState" style="display: none;">
+        <div class="empty-state-icon" id="deptEmptyIcon">
+          <span data-icon="inbox" data-icon-size="24"></span>
+        </div>
+        <h3 class="empty-state-title" id="emptyStateHeading">No Pending Issues</h3>
+        <p class="empty-state-desc" id="emptyStateText">
+          There are currently no open tickets assigned to this department.
+        </p>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Modal: Structured Staff Action & Complaint Inspection Modal -->
+  <div class="modal-overlay" id="staffActionModal">
+    <div class="modal" style="max-width: 800px;">
+      
+      <!-- Top Pinned Header -->
+      <div class="modal-header">
+        <div class="modal-title">
+          <span data-icon="file-text" data-icon-size="18" style="color: var(--portal-accent);"></span>
+          <span id="modalTicketTitle">Complaint Details</span>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="closeModal('staffActionModal')" aria-label="Close ticket modal">
+          <span data-icon="x" data-icon-size="18"></span>
+        </button>
+      </div>
+
+      <!-- Scrollable Ticket Details & Action Controls -->
+      <div class="modal-body" id="modalActionBody">
+        <!-- Rendered dynamically by JavaScript -->
+      </div>
+
+      <!-- Pinned Footer Action -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('staffActionModal')">
+          Close Window
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal: Decline Reason (Mandatory for PostgreSQL Audit Trail) -->
+  <div class="modal-overlay" id="declineModal" style="z-index: 1060;">
+    <div class="modal" style="max-width: 520px;">
+      <div class="modal-header" style="border-bottom: 1px solid #fecaca; background: #fef2f2;">
+        <div class="modal-title" style="color: #991b1b;">
+          <span data-icon="alert-triangle" data-icon-size="18" class="text-danger"></span>
+          <span id="declineModalTicketId">Decline Ticket</span>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="closeModal('declineModal')">
+          <span data-icon="x" data-icon-size="18"></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: #7f1d1d; margin-top: 0; margin-bottom: 12px; line-height: 1.45;">
+          Please enter the official reason for declining this request. The reason will be recorded in PostgreSQL audit logs and displayed directly in the student's complaint details and timeline.
+        </p>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="declineReasonText" class="form-label">
+            Reason for Declining <span class="required">*</span>
+          </label>
+          <textarea 
+            id="declineReasonText" 
+            class="form-control" 
+            rows="4" 
+            placeholder="e.g. Duplicate report already being addressed under Ticket #CP-2026-0042, or issue requires third-party vendor warranty repair..."
+            required
+          ></textarea>
+          <div class="form-error" id="declineError" style="display: none;">Reason is required (min 5 characters).</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('declineModal')">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmDeclineBtn">
+          Confirm Decline
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Complete Repair & Submit Photo Proof Evidence -->
+  <div class="modal-overlay" id="completeRepairModal" style="z-index: 1060;">
+    <div class="modal" style="max-width: 600px;">
+      <div class="modal-header" style="border-bottom: 1px solid #bbf7d0; background: #f0fdf4;">
+        <div class="modal-title" style="color: #166534;">
+          <span data-icon="check-circle-2" data-icon-size="19" class="text-success"></span>
+          <span id="completeModalTicketId">Record Repair Completion Proof</span>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="closeModal('completeRepairModal')">
+          <span data-icon="x" data-icon-size="18"></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.825rem; color: #166534; margin-top: 0; margin-bottom: 14px; line-height: 1.45;">
+          Upload 1 to 5 clear photos demonstrating that the fixture has been physically repaired. Once submitted, the staff completion SLA countdown will stop and the ticket moves to Student Verification.
+        </p>
+
+        <!-- Proof Photos -->
+        <div class="form-group">
+          <label class="form-label">
+            Proof of Completed Work <span class="required">*</span> <span style="font-weight: normal; color: var(--color-slate-500);">(1 to 5 images, Max 10MB each)</span>
+          </label>
+          <div class="upload-dropzone" id="completeDropzone">
+            <div style="color: var(--color-slate-400); margin-bottom: 6px;" data-icon="camera" data-icon-size="28"></div>
+            <p style="font-weight: 600; margin-bottom: 2px; color: var(--color-slate-800); font-size: 0.85rem;">
+              Click to select repair completion photos
+            </p>
+            <p style="font-size: 0.75rem; color: var(--color-slate-500); margin: 0;">JPG, PNG, or WEBP formats</p>
+            <input 
+              type="file" 
+              id="completeImageInput" 
+              accept="image/jpeg,image/png,image/webp" 
+              multiple 
+              style="display: none;"
+            >
+          </div>
+
+          <div class="image-preview-grid" id="completePreviewGrid"></div>
+          <div id="completeImageError" class="form-error" style="display: none;"></div>
+        </div>
+
+        <!-- Acknowledgement -->
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="completeAcknowledgementInput" class="form-label">
+            Technician Notes &amp; Acknowledgement (Optional)
+          </label>
+          <textarea 
+            id="completeAcknowledgementInput" 
+            class="form-control" 
+            rows="3" 
+            placeholder="e.g. Replaced 16A breaker, tightened terminal connections, tested power output at 230V. System fully operational."
+          ></textarea>
+        </div>
+
+        <div id="completeSubmitError" class="form-error" style="display: none; margin-top: 10px;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('completeRepairModal')">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmCompleteBtn">
+          <span>Submit Proof &amp; Complete SLA</span>
+          <span data-icon="arrow-right" data-icon-size="14"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script>
+    const DEPARTMENTS = {
+      ELECTRICAL: {
+        code: "ELECTRICAL",
+        portalTheme: "electrical",
+        label: "Electrical Department",
+        icon: "zap",
+        title: "Electrical Department Maintenance",
+        empty: "No Pending Electrical Issues",
+        desc: "There are currently no open tickets assigned to the Electrical Department. New student complaints will appear here immediately upon submission."
+      },
+      PLUMBING: {
+        code: "PLUMBING",
+        portalTheme: "plumbing",
+        label: "Plumbing Department",
+        icon: "droplets",
+        title: "Plumbing Department Maintenance",
+        empty: "No Pending Plumbing Issues",
+        desc: "There are currently no open tickets assigned to the Plumbing Department."
+      },
+      CLEANING: {
+        code: "CLEANING",
+        portalTheme: "cleaning",
+        label: "Cleaning Department",
+        icon: "sparkles",
+        title: "Cleaning Department Maintenance",
+        empty: "No Pending Sanitation Requests",
+        desc: "There are currently no open sanitation or housekeeping tickets."
+      },
+      IT_SUPPORT: {
+        code: "IT_SUPPORT",
+        portalTheme: "it_support",
+        label: "IT & Technical Support",
+        icon: "monitor",
+        title: "IT & Technical Support Maintenance",
+        empty: "No Pending Technical Tickets",
+        desc: "There are currently no open laboratory or network infrastructure requests."
+      }
+    };
+
+    let activeDeptKey = "ELECTRICAL";
+    let departmentComplaints = [];
+    let activeDeptView = "dashboard"; // "dashboard" or status key: SUBMITTED, UNDER_REVIEW, IN_PROGRESS, AWAITING_VERIFICATION, RESOLVED, CLOSED, DECLINED, ALL
+
+    const DEPT_STATUS_MAP = {
+      SUBMITTED: ["SUBMITTED"],
+      UNDER_REVIEW: ["UNDER_REVIEW"],
+      IN_PROGRESS: ["IN_PROGRESS", "REWORK_REQUIRED"],
+      AWAITING_VERIFICATION: ["AWAITING_VERIFICATION"],
+      RESOLVED: ["RESOLVED", "CLOSED"],
+      CLOSED: ["CLOSED", "RESOLVED"],
+      DECLINED: ["DECLINED"]
+    };
+
+    const DEPT_VIEW_TITLES = {
+      dashboard: "Dashboard",
+      SUBMITTED: "Newly Submitted",
+      UNDER_REVIEW: "Under Review",
+      IN_PROGRESS: "In Progress",
+      AWAITING_VERIFICATION: "Awaiting Student Verification",
+      RESOLVED: "Resolved",
+      CLOSED: "Closed",
+      DECLINED: "Declined",
+      ALL: "Total Assigned Tickets"
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // 1. Guard route: verify department staff
+      const user = authManager.requireAuth(["ELECTRICAL", "PLUMBING", "CLEANING", "IT_SUPPORT"], "../");
+      if (!user) return;
+
+      const staffUserLabel = document.getElementById("staffUserLabel");
+      if (staffUserLabel) {
+        staffUserLabel.textContent = user.fullName || user.email;
+      }
+
+      // 2. Strict role-based department isolation: user role dictates authorized queue
+      const authorizedDept = user.role;
+      if (!DEPARTMENTS[authorizedDept]) {
+        authManager.logout("../login.html");
+        return;
+      }
+
+      const currentParam = new URLSearchParams(window.location.search).get("dept");
+      if (currentParam !== authorizedDept) {
+        const cleanUrl = new URL(window.location.pathname, window.location.origin);
+        cleanUrl.searchParams.set("dept", authorizedDept);
+        window.history.replaceState({}, "", cleanUrl);
+      }
+
+      activeDeptKey = authorizedDept;
+
+      // 3. Initialize interactive dashboard cards & theme
+      initDeptCardClicks();
+      renderDepartmentView(activeDeptKey);
+
+      // 4. URL Hash Routing listener
+      const applyHash = () => {
+        const rawHash = (window.location.hash || "").replace("#", "").toUpperCase();
+        if (!rawHash || rawHash === "DASHBOARD") {
+          switchDeptView("dashboard");
+        } else if (rawHash === "NEWLY_SUBMITTED" || rawHash === "SUBMITTED") {
+          switchDeptView("SUBMITTED");
+        } else if (rawHash === "UNDER_REVIEW") {
+          switchDeptView("UNDER_REVIEW");
+        } else if (rawHash === "IN_PROGRESS") {
+          switchDeptView("IN_PROGRESS");
+        } else if (rawHash === "AWAITING_VERIFICATION") {
+          switchDeptView("AWAITING_VERIFICATION");
+        } else if (rawHash === "RESOLVED") {
+          switchDeptView("RESOLVED");
+        } else if (rawHash === "CLOSED") {
+          switchDeptView("CLOSED");
+        } else if (rawHash === "DECLINED") {
+          switchDeptView("DECLINED");
+        } else if (rawHash === "ALL") {
+          switchDeptView("ALL");
+        }
+      };
+
+      const initialHash = (window.location.hash || "").replace("#", "").toUpperCase();
+      if (initialHash && (DEPT_STATUS_MAP[initialHash] || initialHash === "ALL" || initialHash === "NEWLY_SUBMITTED")) {
+        if (initialHash === "NEWLY_SUBMITTED") activeDeptView = "SUBMITTED";
+        else activeDeptView = initialHash;
+      } else {
+        activeDeptView = "dashboard";
+      }
+
+      window.addEventListener("hashchange", applyHash);
+
+      // 5. Search & block filter listeners
+      document.getElementById("deptSearchFilter").addEventListener("input", filterAndRenderDeptComplaints);
+      document.getElementById("deptBlockFilter").addEventListener("change", filterAndRenderDeptComplaints);
+
+      // 6. Load initial data from Spring Boot REST API
+      loadDepartmentComplaints();
+    });
+
+    /**
+     * Collapsible Sidebar logic
+     */
+    function toggleSidebar(forceState) {
+      const sidebar = document.getElementById("deptSidebar");
+      const toggleBtn = document.getElementById("sidebarToggleBtn");
+      const backdrop = document.getElementById("sidebarBackdrop");
+      if (!sidebar) return;
+
+      if (window.innerWidth <= 900) {
+        const nextOpen = (typeof forceState === "boolean") ? forceState : !sidebar.classList.contains("open");
+        sidebar.classList.toggle("open", nextOpen);
+        if (backdrop) backdrop.classList.toggle("active", nextOpen);
+        return;
+      }
+
+      const isCollapsed = sidebar.classList.contains("collapsed");
+      const nextCollapsed = (typeof forceState === "boolean") ? !forceState : !isCollapsed;
+
+      sidebar.classList.toggle("collapsed", nextCollapsed);
+      if (toggleBtn) {
+        toggleBtn.innerHTML = nextCollapsed 
+          ? getIconSvg("chevron-right", { size: 14 }) 
+          : getIconSvg("chevron-left", { size: 14 });
+        toggleBtn.title = nextCollapsed ? "Expand sidebar" : "Collapse sidebar";
+      }
+    }
+
+    /**
+     * Switch between Dashboard (5 recent tickets) and Status-Filtered Views
+     */
+    function switchDeptView(viewKey) {
+      activeDeptView = viewKey;
+      const isDashboard = (viewKey === "dashboard");
+
+      // 1. Hide summary cards on EVERY status-specific page; show ONLY on Dashboard
+      const metricsGrid = document.getElementById("deptMetricsGrid");
+      if (metricsGrid) {
+        metricsGrid.style.display = isDashboard ? "" : "none";
+      }
+
+      // 2. Update sidebar active item
+      document.querySelectorAll("#deptSidebar .sidebar-link").forEach(link => {
+        const itemKey = link.getAttribute("data-view");
+        const isActive = (itemKey === viewKey);
+        link.classList.toggle("active", isActive);
+      });
+
+      // 3. Update summary cards active state
+      document.querySelectorAll(".metrics-grid-dept .metric-card").forEach(c => {
+        const cardKey = c.getAttribute("data-dept-filter");
+        if (isDashboard) {
+          c.classList.toggle("active", cardKey === "ALL");
+        } else {
+          const isMatch = (cardKey === viewKey) || 
+            ((viewKey === "RESOLVED" || viewKey === "CLOSED") && (cardKey === "RESOLVED"));
+          c.classList.toggle("active", isMatch);
+        }
+      });
+
+      // 4. Close mobile sidebar drawer if open
+      if (window.innerWidth <= 900) {
+        toggleSidebar(false);
+      }
+
+      // 5. Render tickets for the selected view
+      filterAndRenderDeptComplaints();
+    }
+
+    /**
+     * Wire up click and keyboard listeners for all department metric cards
+     */
+    function initDeptCardClicks() {
+      const cards = document.querySelectorAll(".metrics-grid-dept .metric-card");
+      cards.forEach(card => {
+        card.addEventListener("click", () => {
+          const filterKey = card.getAttribute("data-dept-filter") || "ALL";
+          const isCurrentlyActive = (activeDeptView === filterKey) ||
+            ((filterKey === "RESOLVED" || filterKey === "CLOSED") && (activeDeptView === "RESOLVED" || activeDeptView === "CLOSED"));
+          if (isCurrentlyActive && filterKey !== "ALL") {
+            // Clicking currently active card returns to dashboard view
+            switchDeptView("dashboard");
+          } else if (filterKey === "ALL") {
+            // Total Assigned card opens full view without 5-row limit
+            switchDeptView("ALL");
+          } else {
+            switchDeptView(filterKey);
+          }
+        });
+
+        card.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            card.click();
+          }
+        });
+      });
+    }
+
+    async function loadDepartmentComplaints() {
+      const tableBody = document.getElementById("deptTableBody");
+      tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--color-slate-500);"><span class="icon-spin" data-icon="loader" data-icon-size="18"></span> Loading department queue from server...</td></tr>';
+      renderAllIcons(tableBody);
+
+      try {
+        const [complaints, metrics] = await Promise.all([
+          apiClient.getDepartmentComplaints(activeDeptKey),
+          apiClient.getDepartmentMetrics(activeDeptKey)
+        ]);
+
+        departmentComplaints = Array.isArray(complaints) ? complaints : [];
+
+        updateDepartmentMetrics(metrics, departmentComplaints);
+        filterAndRenderDeptComplaints();
+
+      } catch (err) {
+        console.error("Failed to load department complaints:", err);
+        tableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--color-danger);">
+          Failed to fetch queue: ${escapeHTML(err.message)}.<br>
+          <button class="btn btn-sm btn-outline" style="margin-top: 8px;" onclick="loadDepartmentComplaints()">Retry</button>
+        </td></tr>`;
+        showToast("Could not load department queue", "danger");
+      }
+    }
+
+    function updateDepartmentMetrics(metricsObj, list) {
+      const norm = (s) => String(s || "").toUpperCase().replace(/\s+/g, "_");
+
+      const totalCount = (metricsObj && typeof metricsObj.total === 'number') ? metricsObj.total : list.length;
+      const newCount = (metricsObj && typeof metricsObj.submitted === 'number') ? metricsObj.submitted : list.filter(c => norm(c.statusCode || c.status) === "SUBMITTED").length;
+      const reviewCount = (metricsObj && typeof metricsObj.underReview === 'number') ? metricsObj.underReview : list.filter(c => norm(c.statusCode || c.status) === "UNDER_REVIEW").length;
+      const progressCount = (metricsObj && typeof metricsObj.inProgress === 'number') ? metricsObj.inProgress : list.filter(c => norm(c.statusCode || c.status) === "IN_PROGRESS" || norm(c.statusCode || c.status) === "REWORK_REQUIRED").length;
+      const verificationCount = (metricsObj && (typeof metricsObj.awaitingVerification === 'number' || typeof metricsObj.studentVerification === 'number'))
+        ? (metricsObj.awaitingVerification ?? metricsObj.studentVerification)
+        : list.filter(c => norm(c.statusCode || c.status) === "AWAITING_VERIFICATION").length;
+      const resolvedCount = (metricsObj && typeof metricsObj.resolved === 'number') ? metricsObj.resolved : list.filter(c => ["RESOLVED", "CLOSED"].includes(norm(c.statusCode || c.status))).length;
+      const declinedCount = (metricsObj && typeof metricsObj.declined === 'number') ? metricsObj.declined : list.filter(c => norm(c.statusCode || c.status) === "DECLINED").length;
+
+      const elTotal = document.getElementById("deptMetricTotal");
+      const elNew = document.getElementById("deptMetricNew");
+      const elReview = document.getElementById("deptMetricReview");
+      const elProgress = document.getElementById("deptMetricProgress");
+      const elVerification = document.getElementById("deptMetricVerification");
+      const elResolved = document.getElementById("deptMetricResolved");
+      const elDeclined = document.getElementById("deptMetricDeclined");
+
+      if (elTotal) elTotal.textContent = totalCount;
+      if (elNew) elNew.textContent = newCount;
+      if (elReview) elReview.textContent = reviewCount;
+      if (elProgress) elProgress.textContent = progressCount;
+      if (elVerification) elVerification.textContent = verificationCount;
+      if (elResolved) elResolved.textContent = resolvedCount;
+      if (elDeclined) elDeclined.textContent = declinedCount;
+    }
+
+    function filterAndRenderDeptComplaints() {
+      const search = document.getElementById("deptSearchFilter").value.trim().toLowerCase();
+      const blockFilter = document.getElementById("deptBlockFilter").value;
+      const norm = (s) => String(s || "").toUpperCase().replace(/\s+/g, "_");
+
+      // 1. Filter dataset by active department status/view
+      let filtered = departmentComplaints.filter(c => {
+        const sUpper = norm(c.statusCode || c.status);
+
+        let matchesStatus = true;
+        if (activeDeptView === "dashboard" || activeDeptView === "ALL") {
+          matchesStatus = true;
+        } else if (DEPT_STATUS_MAP[activeDeptView]) {
+          matchesStatus = DEPT_STATUS_MAP[activeDeptView].includes(sUpper);
+        } else {
+          matchesStatus = (sUpper === activeDeptView);
+        }
+
+        const matchesBlock = !blockFilter || (c.campusBlock === blockFilter || c.block === blockFilter);
+
+        const matchesSearch = !search ||
+          (c.ticketId && c.ticketId.toLowerCase().includes(search)) ||
+          (c.campusBlock && c.campusBlock.toLowerCase().includes(search)) ||
+          (c.block && c.block.toLowerCase().includes(search)) ||
+          (c.floorLevel && c.floorLevel.toLowerCase().includes(search)) ||
+          (c.floor && c.floor.toLowerCase().includes(search)) ||
+          (c.classroom && c.classroom.toLowerCase().includes(search)) ||
+          (c.room && c.room.toLowerCase().includes(search)) ||
+          (c.specificLocation && c.specificLocation.toLowerCase().includes(search)) ||
+          (c.issueTitle && c.issueTitle.toLowerCase().includes(search)) ||
+          (c.description && c.description.toLowerCase().includes(search));
+
+        return matchesStatus && matchesBlock && matchesSearch;
+      });
+
+      // 2. Sort by original submission timestamp, newest first
+      filtered.sort((a, b) => new Date(b.submittedAt || 0) - new Date(a.submittedAt || 0));
+
+      // 3. For Dashboard, strictly show the 5 most recently submitted tickets
+      let listToRender;
+      const queueCount = document.getElementById("deptQueueCount");
+
+      if (activeDeptView === "dashboard") {
+        listToRender = filtered.slice(0, 5);
+        if (queueCount) {
+          queueCount.textContent = `Recent Complaints: Showing ${listToRender.length} of ${filtered.length}`;
+        }
+      } else {
+        // For status-specific pages (or full assigned view), show all matching tickets
+        listToRender = filtered;
+        if (queueCount) {
+          queueCount.textContent = `Queue: ${filtered.length} complaint${filtered.length === 1 ? '' : 's'}`;
+        }
+      }
+
+      renderDeptTable(listToRender);
+    }
+
+    function renderDeptTable(list) {
+      const tableBody = document.getElementById("deptTableBody");
+      const emptyContainer = document.getElementById("deptEmptyState");
+      const tableContainer = document.querySelector(".table-responsive");
+      const search = document.getElementById("deptSearchFilter").value.trim();
+      const blockFilter = document.getElementById("deptBlockFilter").value;
+
+      if (list.length === 0) {
+        tableBody.innerHTML = "";
+        tableContainer.style.display = "none";
+        emptyContainer.style.display = "block";
+
+        const emptyHeading = document.getElementById("emptyStateHeading");
+        const emptyText = document.getElementById("emptyStateText");
+
+        if (activeDeptView !== "dashboard" || search || blockFilter) {
+          const label = DEPT_VIEW_TITLES[activeDeptView] || "Matching";
+          emptyHeading.textContent = `No ${label} Tickets`;
+          emptyText.textContent = `There are currently no tickets matching "${label}" in this department queue.`;
+        } else {
+          const config = DEPARTMENTS[activeDeptKey] || DEPARTMENTS.ELECTRICAL;
+          emptyHeading.textContent = config.empty;
+          emptyText.textContent = config.desc;
+        }
+        renderAllIcons(emptyContainer);
+        return;
+      }
+
+      tableContainer.style.display = "block";
+      emptyContainer.style.display = "none";
+
+      tableBody.innerHTML = list.map(c => `
+        <tr>
+          <td>
+            <span class="ticket-id-tag">
+              ${escapeHTML(c.ticketId)}
+            </span>
+          </td>
+          <td style="font-size: 0.8rem; color: var(--color-slate-600); white-space: nowrap;">
+            ${formatDate(c.submittedAt)}
+          </td>
+          <td>
+            <span style="font-weight: 600; color: var(--color-slate-800);">${escapeHTML(c.campusBlock || c.block)}</span><br>
+            <span style="font-size: 0.775rem; color: var(--color-slate-500);">${escapeHTML(c.floorLevel || c.floor)} &bull; ${escapeHTML(c.specificLocation)}</span>
+          </td>
+          <td style="max-width: 280px;">
+            <div style="font-weight: 600; color: var(--color-slate-900);">${escapeHTML(c.issueTitle || "Complaint")}</div>
+            <div style="font-size: 0.775rem; color: var(--color-slate-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              ${escapeHTML(c.description)}
+            </div>
+          </td>
+          <td>
+            ${c.emergency 
+              ? '<span class="badge badge-declined" style="font-size: 0.68rem; padding: 2px 6px; display: inline-flex; align-items: center; gap: 4px;"><span data-icon="alert-triangle" data-icon-size="12"></span> URGENT</span>' 
+              : '<span style="font-size: 0.8rem; color: var(--color-slate-500);">Normal</span>'}
+          </td>
+          <td>
+            <span class="badge ${getStatusBadgeClass(c.status)}">
+              ${escapeHTML(c.status)}
+            </span>
+            ${c.escalatedToAdmin ? '<span class="badge badge-overdue" style="font-size:0.65rem; margin-top:3px; display:block; text-align:center;">OVERDUE SLA</span>' : ''}
+          </td>
+          <td style="text-align: right; white-space: nowrap;">
+            ${getDeptActionButton(c)}
+          </td>
+        </tr>
+      `).join("");
+
+      renderAllIcons(tableBody);
+    }
+
+    function getDeptActionButton(c) {
+      const norm = String(c.statusCode || c.status || "").toUpperCase().replace(/\s+/g, "_");
+      if (norm === "SUBMITTED") {
+        return `<button type="button" class="btn btn-primary btn-sm" onclick="openStaffAction('${escapeHTML(c.ticketId)}')">
+          <span>Review</span>
+          <span data-icon="arrow-right" data-icon-size="13"></span>
+        </button>`;
+      } else if (norm === "UNDER_REVIEW") {
+        return `<button type="button" class="btn btn-outline btn-sm" onclick="openStaffAction('${escapeHTML(c.ticketId)}')">
+          <span data-icon="wrench" data-icon-size="13"></span>
+          <span>Start Repair</span>
+        </button>`;
+      } else if (norm === "IN_PROGRESS") {
+        return `<button type="button" class="btn btn-primary btn-sm" onclick="openStaffAction('${escapeHTML(c.ticketId)}')">
+          <span data-icon="camera" data-icon-size="13"></span>
+          <span>Complete Repair</span>
+        </button>`;
+      } else if (norm === "AWAITING_VERIFICATION") {
+        return `<button type="button" class="btn btn-outline btn-sm" onclick="openStaffAction('${escapeHTML(c.ticketId)}')">
+          <span data-icon="eye" data-icon-size="13"></span>
+          <span>View Verification</span>
+        </button>`;
+      } else if (norm === "DECLINED") {
+        return `<button type="button" class="btn btn-outline btn-sm" style="color: #b91c1c; border-color: #fca5a5;" onclick="openStaffAction('${escapeHTML(c.ticketId)}')">
+          <span data-icon="eye" data-icon-size="13"></span>
+          <span>View Declined</span>
+        </button>`;
+      } else {
+        return `<button type="button" class="btn btn-outline btn-sm" onclick="openStaffAction('${escapeHTML(c.ticketId)}')">
+          <span data-icon="eye" data-icon-size="13"></span>
+          <span>View Details</span>
+        </button>`;
+      }
+    }
+
+    function renderDepartmentView(deptKey) {
+      const config = DEPARTMENTS[deptKey] || DEPARTMENTS.ELECTRICAL;
+
+      // Apply portal theme token
+      document.documentElement.setAttribute("data-portal", config.portalTheme);
+
+      const deptHeadingEl = document.getElementById("deptHeading");
+      if (deptHeadingEl) {
+        deptHeadingEl.textContent = config.title;
+      }
+
+      const navDeptIconWrap = document.getElementById("navDeptIconWrap");
+      if (navDeptIconWrap) {
+        navDeptIconWrap.setAttribute("data-icon", config.icon);
+      }
+
+      const deptHeaderIcon = document.getElementById("deptHeaderIcon");
+      if (deptHeaderIcon) {
+        deptHeaderIcon.setAttribute("data-icon", config.icon);
+      }
+
+      document.title = `${config.label} Maintenance • Smart Campus`;
+
+      document.getElementById("emptyStateHeading").textContent = config.empty;
+      document.getElementById("emptyStateText").textContent = config.desc;
+
+      renderAllIcons(document.body);
+    }
+
+    let currentActionTicketId = null;
+    let currentDecliningTicketId = null;
+    let currentCompletingTicketId = null;
+    let selectedEvidenceFiles = [];
+
+    /**
+     * Complete lifecycle actions inside Technician Review Modal
+     */
+    function openStaffAction(ticketId) {
+      currentActionTicketId = ticketId;
+      const c = departmentComplaints.find(item => item.ticketId === ticketId);
+      if (!c) {
+        showToast("Ticket not found in queue", "warning");
+        return;
+      }
+
+      const titleEl = document.getElementById("modalTicketTitle");
+      const modalBody = document.getElementById("modalActionBody");
+
+      titleEl.innerHTML = `${escapeHTML(c.issueTitle)} &bull; <span class="ticket-id-tag">${escapeHTML(c.ticketId)}</span>`;
+
+      const normStatus = String(c.statusCode || c.status || "").toUpperCase().replace(/\s+/g, "_");
+
+      let actionControlsHtml = "";
+
+      if (normStatus === "SUBMITTED") {
+        actionControlsHtml = `
+          <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border-color); display: flex; gap: 10px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-primary" id="modalAcceptBtn" style="min-width: 140px;">
+              <span data-icon="check" data-icon-size="14"></span>
+              <span>Accept Ticket</span>
+            </button>
+            <button type="button" class="btn btn-outline" id="modalDeclineBtn" style="color: #b91c1c; border-color: #fca5a5; min-width: 140px;">
+              <span data-icon="x" data-icon-size="14"></span>
+              <span>Decline Ticket...</span>
+            </button>
+          </div>
+        `;
+      } else if (normStatus === "UNDER_REVIEW") {
+        actionControlsHtml = `
+          <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border-color); display: flex; gap: 10px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-primary" id="modalStartRepairBtn" style="min-width: 160px;">
+              <span data-icon="wrench" data-icon-size="14"></span>
+              <span>Start Physical Repair</span>
+              <span data-icon="arrow-right" data-icon-size="13"></span>
+            </button>
+          </div>
+        `;
+      } else if (normStatus === "IN_PROGRESS") {
+        actionControlsHtml = `
+          <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border-color); display: flex; gap: 10px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-primary" id="modalCompleteBtn" style="min-width: 180px;">
+              <span data-icon="camera" data-icon-size="14"></span>
+              <span>Record Completion &amp; Submit Proof</span>
+              <span data-icon="arrow-right" data-icon-size="13"></span>
+            </button>
+          </div>
+        `;
+      } else if (normStatus === "AWAITING_VERIFICATION") {
+        actionControlsHtml = `
+          <div style="margin-top: 14px; padding: 12px 14px; border: 1px solid #fed7aa; border-left: 4px solid #ea580c; border-radius: var(--radius-md); background: #fff7ed;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+              <span style="color: #ea580c;" data-icon="clock" data-icon-size="16"></span>
+              <strong style="color: #9a3412; font-size: 0.9rem;">Awaiting Student Inspection &amp; Verification</strong>
+            </div>
+            <p style="font-size: 0.8rem; color: #7c2d12; margin: 0; line-height: 1.45;">
+              Repair completion proof has been uploaded. The staff SLA countdown is stopped while the student inspects the repaired fixture.
+            </p>
+          </div>
+        `;
+      } else if (normStatus === "DECLINED") {
+        actionControlsHtml = `
+          <div class="decline-details-box" style="margin-top: 14px;">
+            <div class="decline-box-header">
+              <span class="decline-box-icon" data-icon="x-circle" data-icon-size="17"></span>
+              <strong class="decline-box-title">Ticket Declined by Department</strong>
+            </div>
+            <div class="decline-box-meta">
+              Declined by: <strong>${escapeHTML(c.declinedBy || 'Department Staff')}</strong> &bull; ${formatDate(c.declinedAt || c.updatedAt)}
+            </div>
+            <div class="decline-box-content"><strong>Official Reason:</strong><br>${escapeHTML(c.declinedReason || 'No reason specified.')}</div>
+          </div>
+        `;
+      } else if (normStatus === "CLOSED" || normStatus === "RESOLVED") {
+        actionControlsHtml = `
+          <div style="margin-top: 14px; padding: 12px 14px; border: 1px solid #bbf7d0; border-left: 4px solid #15803d; border-radius: var(--radius-md); background: #f0fdf4;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+              <span style="color: #15803d;" data-icon="check-circle-2" data-icon-size="16"></span>
+              <strong style="color: #166534; font-size: 0.9rem;">Ticket Resolved &amp; Closed</strong>
+            </div>
+            <p style="font-size: 0.8rem; color: #14532d; margin: 0;">
+              This ticket was verified by the student and closed on ${formatDate(c.resolvedAt || c.updatedAt)}.
+            </p>
+          </div>
+        `;
+      }
+
+      const detailsHtml = renderStructuredComplaintMetadata(c, { isDepartment: true });
+
+      modalBody.innerHTML = `
+        ${detailsHtml}
+        ${actionControlsHtml}
+      `;
+
+      renderAllIcons(modalBody);
+
+      if (normStatus === "SUBMITTED") {
+        const acceptBtn = document.getElementById("modalAcceptBtn");
+        const declineBtn = document.getElementById("modalDeclineBtn");
+        if (acceptBtn) acceptBtn.addEventListener("click", () => handleAcceptComplaint(c.ticketId));
+        if (declineBtn) declineBtn.addEventListener("click", () => openDeclineModal(c.ticketId));
+      } else if (normStatus === "UNDER_REVIEW") {
+        const startBtn = document.getElementById("modalStartRepairBtn");
+        if (startBtn) startBtn.addEventListener("click", () => handleStartRepair(c.ticketId));
+      } else if (normStatus === "IN_PROGRESS") {
+        const compBtn = document.getElementById("modalCompleteBtn");
+        if (compBtn) compBtn.addEventListener("click", () => openCompleteRepairModal(c.ticketId));
+      }
+
+      openModal("staffActionModal");
+      if (typeof initSlaCountdownTimer === "function") {
+        initSlaCountdownTimer(c, `slaCountdownContainer_${c.ticketId}`);
+      }
+    }
+
+    /**
+     * Handler: Accept Complaint
+     */
+    async function handleAcceptComplaint(ticketId) {
+      const user = authManager.getCurrentUser();
+      const staffName = user ? (user.fullName || user.email) : "Department Staff";
+
+      const acceptBtn = document.getElementById("modalAcceptBtn");
+      if (acceptBtn) {
+        acceptBtn.disabled = true;
+        acceptBtn.innerHTML = `<span class="icon-spin" data-icon="loader" data-icon-size="14"></span> Accepting...`;
+        renderAllIcons(acceptBtn);
+      }
+
+      try {
+        await apiClient.acceptComplaint(ticketId, {
+          staffName: staffName,
+          notes: "Accepted from department review queue"
+        });
+
+        showToast(`Ticket ${ticketId} accepted! 7-day countdown activated.`, "success");
+        closeModal("staffActionModal");
+        await loadDepartmentComplaints();
+        openStaffAction(ticketId);
+      } catch (err) {
+        console.error("Accept error:", err);
+        showToast(`Failed to accept ticket: ${err.message}`, "danger");
+        if (acceptBtn) {
+          acceptBtn.disabled = false;
+          acceptBtn.innerHTML = `<span data-icon="check" data-icon-size="14"></span> Accept Ticket`;
+          renderAllIcons(acceptBtn);
+        }
+      }
+    }
+
+    /**
+     * Open Decline Modal with Mandatory Reason
+     */
+    function openDeclineModal(ticketId) {
+      currentDecliningTicketId = ticketId;
+      document.getElementById("declineModalTicketId").textContent = `Decline Ticket #${ticketId}`;
+      const reasonText = document.getElementById("declineReasonText");
+      reasonText.value = "";
+      const errorDiv = document.getElementById("declineError");
+      errorDiv.textContent = "";
+      errorDiv.style.display = "none";
+
+      const confirmBtn = document.getElementById("confirmDeclineBtn");
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = "Confirm Decline";
+
+      openModal("declineModal");
+      setTimeout(() => reasonText.focus(), 150);
+    }
+
+    // Confirm Decline
+    document.getElementById("confirmDeclineBtn").addEventListener("click", async () => {
+      if (!currentDecliningTicketId) return;
+
+      const reasonText = document.getElementById("declineReasonText").value.trim();
+      const errorDiv = document.getElementById("declineError");
+
+      if (!reasonText || reasonText.length < 5) {
+        errorDiv.textContent = "Please provide a valid explanation for declining (at least 5 characters).";
+        errorDiv.style.display = "block";
+        return;
+      }
+
+      const confirmBtn = document.getElementById("confirmDeclineBtn");
+      confirmBtn.disabled = true;
+      confirmBtn.innerHTML = `<span class="icon-spin" data-icon="loader" data-icon-size="14"></span> Declining...`;
+      renderAllIcons(confirmBtn);
+
+      try {
+        await apiClient.declineComplaint(currentDecliningTicketId, {
+          reason: reasonText
+        });
+
+        showToast(`Ticket ${currentDecliningTicketId} has been declined.`, "info");
+        closeModal("declineModal");
+        closeModal("staffActionModal");
+        await loadDepartmentComplaints();
+      } catch (err) {
+        console.error("Decline error:", err);
+        errorDiv.textContent = err.message || "Failed to decline ticket.";
+        errorDiv.style.display = "block";
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = "Confirm Decline";
+      }
+    });
+
+    /**
+     * Handler: Start Repair
+     */
+    async function handleStartRepair(ticketId) {
+      const user = authManager.getCurrentUser();
+      const staffName = user ? (user.fullName || user.email) : "Technician";
+
+      const startBtn = document.getElementById("modalStartRepairBtn");
+      if (startBtn) {
+        startBtn.disabled = true;
+        startBtn.innerHTML = `<span class="icon-spin" data-icon="loader" data-icon-size="14"></span> Starting...`;
+        renderAllIcons(startBtn);
+      }
+
+      try {
+        await apiClient.startRepair(ticketId, {
+          staffName: staffName,
+          notes: "Technician began physical maintenance"
+        });
+
+        showToast(`Ticket ${ticketId} marked In Progress!`, "success");
+        closeModal("staffActionModal");
+        await loadDepartmentComplaints();
+        openStaffAction(ticketId);
+      } catch (err) {
+        console.error("Start repair error:", err);
+        showToast(`Failed to start repair: ${err.message}`, "danger");
+        if (startBtn) {
+          startBtn.disabled = false;
+          startBtn.innerHTML = `<span data-icon="wrench" data-icon-size="14"></span> Start Physical Repair`;
+          renderAllIcons(startBtn);
+        }
+      }
+    }
+
+    /**
+     * Open Complete Repair Modal
+     */
+    function openCompleteRepairModal(ticketId) {
+      currentCompletingTicketId = ticketId;
+      selectedEvidenceFiles = [];
+
+      document.getElementById("completeModalTicketId").textContent = `Submit Proof for Ticket #${ticketId}`;
+      document.getElementById("completePreviewGrid").innerHTML = "";
+      document.getElementById("completeImageError").style.display = "none";
+      document.getElementById("completeSubmitError").style.display = "none";
+      document.getElementById("completeAcknowledgementInput").value = "";
+
+      const confirmBtn = document.getElementById("confirmCompleteBtn");
+      confirmBtn.disabled = false;
+      confirmBtn.innerHTML = `<span>Submit Proof &amp; Complete SLA</span> <span data-icon="arrow-right" data-icon-size="14"></span>`;
+      renderAllIcons(confirmBtn);
+
+      openModal("completeRepairModal");
+    }
+
+    // Complete repair dropzone
+    const completeDropzone = document.getElementById("completeDropzone");
+    const completeImageInput = document.getElementById("completeImageInput");
+    const completePreviewGrid = document.getElementById("completePreviewGrid");
+    const completeImageError = document.getElementById("completeImageError");
+
+    completeDropzone.addEventListener("click", () => completeImageInput.click());
+
+    completeDropzone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      completeDropzone.classList.add("dragover");
+    });
+
+    completeDropzone.addEventListener("dragleave", () => {
+      completeDropzone.classList.remove("dragover");
+    });
+
+    completeDropzone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      completeDropzone.classList.remove("dragover");
+      if (e.dataTransfer && e.dataTransfer.files) {
+        handleEvidenceFiles(Array.from(e.dataTransfer.files));
+      }
+    });
+
+    completeImageInput.addEventListener("change", () => {
+      if (completeImageInput.files) {
+        handleEvidenceFiles(Array.from(completeImageInput.files));
+      }
+    });
+
+    function handleEvidenceFiles(files) {
+      completeImageError.style.display = "none";
+      const validMimes = ["image/jpeg", "image/png", "image/webp"];
+
+      for (const file of files) {
+        if (!validMimes.includes(file.type)) {
+          showToast(`File "${file.name}" is not supported (JPG/PNG only).`, "danger");
+          continue;
+        }
+        if (file.size > 10 * 1024 * 1024) {
+          showToast(`File "${file.name}" exceeds 10MB limit.`, "danger");
+          continue;
+        }
+        if (selectedEvidenceFiles.length >= 5) {
+          completeImageError.textContent = "Maximum 5 evidence images allowed.";
+          completeImageError.style.display = "block";
+          break;
+        }
+        selectedEvidenceFiles.push(file);
+      }
+      renderEvidencePreviews();
+    }
+
+    function renderEvidencePreviews() {
+      completePreviewGrid.innerHTML = "";
+      selectedEvidenceFiles.forEach((file, index) => {
+        const item = document.createElement("div");
+        item.className = "preview-thumb-item";
+
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+        img.alt = `Proof ${index + 1}`;
+
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "preview-thumb-remove";
+        removeBtn.setAttribute("aria-label", "Remove image");
+        removeBtn.innerHTML = getIconSvg("x", { size: 12 });
+        removeBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          selectedEvidenceFiles.splice(index, 1);
+          renderEvidencePreviews();
+        });
+
+        item.appendChild(img);
+        item.appendChild(removeBtn);
+        completePreviewGrid.appendChild(item);
+      });
+    }
+
+    // Submit Complete Repair
+    document.getElementById("confirmCompleteBtn").addEventListener("click", async () => {
+      if (!currentCompletingTicketId) return;
+
+      const submitError = document.getElementById("completeSubmitError");
+      submitError.style.display = "none";
+
+      if (selectedEvidenceFiles.length === 0) {
+        completeImageError.textContent = "Please attach at least 1 photo showing the completed repair work.";
+        completeImageError.style.display = "block";
+        return;
+      }
+
+      const notes = document.getElementById("completeAcknowledgementInput").value.trim();
+      const user = authManager.getCurrentUser();
+      const staffName = user ? (user.fullName || user.email) : "Technician";
+
+      const confirmBtn = document.getElementById("confirmCompleteBtn");
+      confirmBtn.disabled = true;
+      confirmBtn.innerHTML = `<span class="icon-spin" data-icon="loader" data-icon-size="14"></span> Uploading Proof...`;
+      renderAllIcons(confirmBtn);
+
+      const formData = new FormData();
+      formData.append("staffName", staffName);
+      formData.append("notes", notes || "Repair completed and verified by technician");
+      selectedEvidenceFiles.forEach(file => {
+        formData.append("files", file);
+      });
+
+      try {
+        await apiClient.completeRepair(currentCompletingTicketId, formData);
+
+        showToast(`Ticket ${currentCompletingTicketId} submitted for student verification! SLA stopped.`, "success");
+        closeModal("completeRepairModal");
+        closeModal("staffActionModal");
+        await loadDepartmentComplaints();
+        openStaffAction(currentCompletingTicketId);
+      } catch (err) {
+        console.error("Complete repair error:", err);
+        submitError.textContent = err.message || "Failed to submit completion proof.";
+        submitError.style.display = "block";
+        confirmBtn.disabled = false;
+        confirmBtn.innerHTML = `<span>Submit Proof &amp; Complete SLA</span> <span data-icon="arrow-right" data-icon-size="14"></span>`;
+        renderAllIcons(confirmBtn);
+      }
+    });
+  </script>
+</body>
+</html>

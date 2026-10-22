@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en" data-portal="student">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report a Problem &bull; Student Portal</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/dashboard.css">
+  <style>
+    .complaint-form-card {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .complaint-form-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      background-color: var(--color-slate-50);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .complaint-form-body {
+      padding: 24px;
+    }
+    .complaint-form-footer {
+      padding: 14px 24px;
+      background-color: var(--color-slate-50);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .location-cascading-panel {
+      background-color: var(--color-slate-50);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 1.25rem;
+    }
+    .location-panel-title {
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: var(--portal-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .upload-dropzone {
+      border: 1.5px dashed var(--color-slate-300);
+      border-radius: var(--radius-md);
+      padding: 24px 16px;
+      text-align: center;
+      background-color: var(--color-slate-50);
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+    .upload-dropzone:hover, .upload-dropzone.dragover {
+      border-color: var(--portal-accent);
+      background-color: var(--portal-accent-soft);
+    }
+    .image-preview-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .preview-thumb-item {
+      width: 76px;
+      height: 76px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      position: relative;
+      overflow: hidden;
+      background-color: #ffffff;
+    }
+    .preview-thumb-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .preview-thumb-remove {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(15, 23, 42, 0.75);
+      color: #ffffff;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Top Navigation (Academic Slate + Teal) -->
+  <nav class="navbar" aria-label="Student Navigation">
+    <div class="container navbar-inner" style="max-width: 100%; padding: 0 1.5rem;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button 
+          type="button" 
+          class="sidebar-toggle-btn" 
+          id="studentSidebarToggle" 
+          aria-label="Toggle navigation sidebar" 
+          title="Toggle navigation sidebar"
+          onclick="toggleSidebar()"
+          style="background: var(--color-slate-100); border: 1px solid var(--border-color); color: var(--color-slate-700);"
+        >
+          <span data-icon="menu" data-icon-size="16"></span>
+        </button>
+        <a href="index.html" class="navbar-brand">
+          <div class="brand-icon-wrap" data-icon="building" data-icon-size="16"></div>
+          <span>Smart Campus</span>
+        </a>
+      </div>
+      <ul class="navbar-nav">
+        <li>
+          <span style="font-size: 0.8rem; color: var(--color-slate-500); display: flex; align-items: center; gap: 5px;">
+            <span data-icon="user" data-icon-size="13"></span>
+            <span id="studentUserLabel">Student</span>
+          </span>
+        </li>
+        <li>
+          <a href="#" onclick="authManager.logout('../login.html'); return false;" title="Sign out of student portal">
+            <span data-icon="log-out" data-icon-size="14"></span>
+            <span>Logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Portal Layout with Collapsible Sidebar -->
+  <div class="portal-layout-wrapper">
+    <!-- Mobile Backdrop for Sidebar -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar(false)"></div>
+
+    <!-- Collapsible Sidebar -->
+    <aside class="portal-sidebar" id="studentSidebar" aria-label="Student Navigation">
+      <div class="sidebar-header">
+        <span class="sidebar-title">Navigation</span>
+        <button 
+          type="button" 
+          class="sidebar-toggle-btn" 
+          id="sidebarToggleBtn" 
+          onclick="toggleSidebar()" 
+          aria-label="Collapse navigation sidebar" 
+          title="Collapse or expand sidebar"
+        >
+          <span data-icon="chevron-left" data-icon-size="14"></span>
+        </button>
+      </div>
+      <ul class="sidebar-nav">
+        <!-- 1. Dashboard -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="index.html" 
+            class="sidebar-link" 
+            id="navStudentDashboard" 
+            data-view="dashboard" 
+            title="Dashboard"
+          >
+            <span class="sidebar-icon" data-icon="clipboard-list" data-icon-size="16"></span>
+            <span class="sidebar-text">Dashboard</span>
+          </a>
+        </li>
+
+        <!-- 2. Report New Problem -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="new-complaint.html" 
+            class="sidebar-link active" 
+            id="navStudentReport" 
+            data-view="report" 
+            title="Report New Problem"
+          >
+            <span class="sidebar-icon" data-icon="plus" data-icon-size="16"></span>
+            <span class="sidebar-text">Report New Problem</span>
+          </a>
+        </li>
+
+        <!-- 3. Submitted -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="index.html#SUBMITTED" 
+            class="sidebar-link" 
+            id="navStudentSubmitted" 
+            data-view="SUBMITTED" 
+            title="Submitted"
+          >
+            <span class="sidebar-icon" data-icon="inbox" data-icon-size="16"></span>
+            <span class="sidebar-text">Submitted</span>
+          </a>
+        </li>
+
+        <!-- 4. Under Review -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="index.html#UNDER_REVIEW" 
+            class="sidebar-link" 
+            id="navStudentReview" 
+            data-view="UNDER_REVIEW" 
+            title="Under Review"
+          >
+            <span class="sidebar-icon" data-icon="clock" data-icon-size="16"></span>
+            <span class="sidebar-text">Under Review</span>
+          </a>
+        </li>
+
+        <!-- 5. In Progress -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="index.html#IN_PROGRESS" 
+            class="sidebar-link" 
+            id="navStudentProgress" 
+            data-view="IN_PROGRESS" 
+            title="In Progress"
+          >
+            <span class="sidebar-icon" data-icon="wrench" data-icon-size="16"></span>
+            <span class="sidebar-text">In Progress</span>
+          </a>
+        </li>
+
+        <!-- 6. Awaiting Student Verification -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="index.html#AWAITING_VERIFICATION" 
+            class="sidebar-link" 
+            id="navStudentVerification" 
+            data-view="AWAITING_VERIFICATION" 
+            title="Awaiting Student Verification"
+          >
+            <span class="sidebar-icon" data-icon="check-circle-2" data-icon-size="16"></span>
+            <span class="sidebar-text">Awaiting Student Verification</span>
+          </a>
+        </li>
+
+        <!-- 7. Resolved -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="index.html#RESOLVED" 
+            class="sidebar-link" 
+            id="navStudentResolved" 
+            data-view="RESOLVED" 
+            title="Resolved"
+          >
+            <span class="sidebar-icon" data-icon="check" data-icon-size="16"></span>
+            <span class="sidebar-text">Resolved</span>
+          </a>
+        </li>
+
+        <!-- 8. Closed -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="index.html#CLOSED" 
+            class="sidebar-link" 
+            id="navStudentClosed" 
+            data-view="CLOSED" 
+            title="Closed"
+          >
+            <span class="sidebar-icon" data-icon="shield" data-icon-size="16"></span>
+            <span class="sidebar-text">Closed</span>
+          </a>
+        </li>
+
+        <!-- 9. Declined -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="index.html#DECLINED" 
+            class="sidebar-link" 
+            id="navStudentDeclined" 
+            data-view="DECLINED" 
+            title="Declined"
+          >
+            <span class="sidebar-icon" data-icon="x-circle" data-icon-size="16"></span>
+            <span class="sidebar-text">Declined</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="portal-main-wrap">
+      <div class="container-narrow" style="margin: 0 auto; padding-top: 1.5rem; padding-bottom: 3rem;">
+
+        <div class="portal-page-header">
+          <div class="portal-header-left">
+            <h1 class="portal-page-title">
+              <span data-icon="plus" data-icon-size="18" style="color: var(--portal-accent);"></span>
+              <span>Report Infrastructure Problem</span>
+            </h1>
+            <p class="portal-page-subtitle">
+              Submit details and photos of broken equipment, plumbing leaks, electrical failures, or sanitation needs.
+            </p>
+          </div>
+        </div>
+
+    <!-- Complaint Submission Form -->
+    <form id="complaintForm" class="complaint-form-card" novalidate>
+      <div class="complaint-form-header">
+        <h3 style="margin: 0; font-size: 0.95rem; font-weight: 600;">Incident Description &amp; Location</h3>
+        <span style="font-size: 0.775rem; color: var(--color-slate-500);">
+          Required fields are indicated by <span style="color: #dc2626;">*</span>
+        </span>
+      </div>
+
+      <div class="complaint-form-body">
+        <!-- 1. Department Selection -->
+        <div class="form-group" id="deptGroup">
+          <label class="form-label" for="departmentSelect">
+            Responsible Department <span class="required">*</span>
+          </label>
+          <select id="departmentSelect" class="form-select" required>
+            <option value="">Select Department</option>
+            <option value="ELECTRICAL">Electrical Department (Lighting, fans, switches, wiring)</option>
+            <option value="PLUMBING">Plumbing Department (Pipes, faucets, washrooms, leaks)</option>
+            <option value="CLEANING">Cleaning Department (Restrooms, classrooms, waste, hygiene)</option>
+            <option value="IT_SUPPORT">IT &amp; Technical Support (Wi-Fi, projectors, lab systems)</option>
+          </select>
+          <div class="form-error" id="deptError">Please select the responsible maintenance department.</div>
+        </div>
+
+        <!-- 2. Location Cascading Group (Block -> Floor -> Classroom/Location) -->
+        <div class="location-cascading-panel">
+          <div class="location-panel-title">
+            <span data-icon="map-pin" data-icon-size="15"></span>
+            <span>Specific Campus Location</span>
+          </div>
+
+          <!-- Block Selection -->
+          <div class="form-group" id="blockGroup">
+            <label class="form-label" for="blockSelect">
+              Campus Block <span class="required">*</span>
+            </label>
+            <select id="blockSelect" class="form-select" required>
+              <option value="">Select block</option>
+            </select>
+            <div class="form-error" id="blockError">Please select a valid campus block.</div>
+          </div>
+
+          <!-- Floor Selection (Cascading from Block) -->
+          <div class="form-group" id="floorGroup">
+            <label class="form-label" for="floorSelect">
+              Floor Level <span class="required">*</span>
+            </label>
+            <select id="floorSelect" class="form-select" disabled required>
+              <option value="">Select floor level</option>
+            </select>
+            <div class="form-error" id="floorError">Please select a floor level.</div>
+          </div>
+
+          <!-- Classroom / Room Selection (Cascading from Floor) -->
+          <div class="form-group" id="locationGroup" style="margin-bottom: 0;">
+            <label class="form-label" for="locationSelect">
+              Classroom, Lab, or Specific Area <span class="required">*</span>
+            </label>
+            <select id="locationSelect" class="form-select" disabled required>
+              <option value="">Select classroom or area</option>
+            </select>
+            <div class="form-error" id="locationError">Please select a specific classroom or area.</div>
+          </div>
+        </div>
+
+        <!-- 3. Issue Title / Summary -->
+        <div class="form-group" id="titleGroup">
+          <label class="form-label" for="titleInput">
+            Issue Title / Summary <span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="titleInput" 
+            class="form-control" 
+            placeholder="e.g., Ceiling fan grinding noise and vibrating in LH-1002" 
+            maxlength="100"
+            required
+          >
+          <div class="form-error" id="titleError">Please enter a concise title (minimum 5 characters).</div>
+        </div>
+
+        <!-- 4. Detailed Description -->
+        <div class="form-group" id="descGroup">
+          <label class="form-label" for="descriptionInput">
+            Detailed Problem Description <span class="required">*</span>
+          </label>
+          <textarea 
+            id="descriptionInput" 
+            class="form-control" 
+            rows="4" 
+            placeholder="Describe what is damaged or failing, when it was noticed, and any relevant equipment identifiers..."
+            maxlength="600"
+            required
+          ></textarea>
+          <div style="display: flex; justify-content: space-between;" class="form-help">
+            <span>Provide precise details to help maintenance technicians prepare replacement parts.</span>
+            <span id="charCounter">0 / 600</span>
+          </div>
+          <div class="form-error" id="descError">Please provide a description (minimum 15 characters).</div>
+        </div>
+
+        <!-- 5. Student Contact Phone Number -->
+        <div class="form-group" id="phoneGroup">
+          <label class="form-label" for="phoneInput">
+            Student Contact Phone Number <span class="required">*</span>
+          </label>
+          <input 
+            type="tel" 
+            id="phoneInput" 
+            class="form-control" 
+            placeholder="e.g., 9876543210" 
+            maxlength="15"
+            required
+          >
+          <div class="form-help">A 10-digit phone number for maintenance staff to coordinate room access.</div>
+          <div class="form-error" id="phoneError">Please enter a valid 10-digit mobile phone number.</div>
+        </div>
+
+        <!-- 6. Emergency Hazard Indicator -->
+        <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; margin-bottom: 1.25rem;">
+          <div style="display: flex; align-items: flex-start; gap: 10px;">
+            <input 
+              type="checkbox" 
+              id="emergencyCheckbox" 
+              style="width: 17px; height: 17px; margin-top: 2px; accent-color: #b91c1c; cursor: pointer;"
+            >
+            <label for="emergencyCheckbox" style="font-weight: 600; font-size: 0.85rem; color: #b91c1c; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+              <span data-icon="alert-triangle" data-icon-size="15"></span>
+              <span>Mark this as an Urgent Safety / Emergency Hazard</span>
+            </label>
+          </div>
+
+          <div id="emergencyWarningBox" style="margin-top: 10px; padding: 12px; background-color: #fef2f2; border: 1px solid #fecaca; border-radius: var(--radius-sm); display: none;">
+            <div style="font-size: 0.8rem; color: #991b1b; line-height: 1.45;">
+              <strong>Campus Emergency Notice:</strong> For active fires, sparking electrical distribution panels, exposed high-voltage cables, or structural hazards, contact the Control Room immediately at <strong>Ext 101 / 102</strong>. Online tickets are queued for scheduled departmental shifts.
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. Image Attachments -->
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">
+            Attach Evidence Photos <span style="font-weight: 400; color: var(--color-slate-500);">(Up to 5 images, JPG/PNG)</span>
+          </label>
+          
+          <div class="upload-dropzone" id="dropzone">
+            <div style="color: var(--color-slate-400); margin-bottom: 8px;" data-icon="camera" data-icon-size="28"></div>
+            <p style="font-weight: 600; margin-bottom: 2px; color: var(--color-slate-800); font-size: 0.875rem;">
+              Click to browse or drag and drop photos
+            </p>
+            <p style="font-size: 0.775rem; color: var(--color-slate-500); margin: 0;">
+              High-resolution photos assist technicians with diagnosis and tooling. Max 5MB per file.
+            </p>
+            <input 
+              type="file" 
+              id="imageInput" 
+              accept="image/jpeg,image/png,image/webp" 
+              multiple 
+              style="display: none;"
+            >
+          </div>
+
+          <div class="image-preview-grid" id="imagePreviewContainer"></div>
+          <div class="form-error" id="imageError" style="display: none;">Maximum 5 images allowed.</div>
+        </div>
+      </div>
+
+      <!-- Card Footer Actions -->
+      <div class="complaint-form-footer">
+        <button type="button" class="btn btn-outline" id="discardBtn">Discard</button>
+        <button type="button" class="btn btn-outline" id="previewBtn">Preview Details</button>
+        <button type="submit" class="btn btn-primary" id="submitFormBtn">
+          <span>Submit Problem Ticket</span>
+          <span data-icon="arrow-right" data-icon-size="14"></span>
+        </button>
+      </div>
+    </form>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal: Preview & Confirm Submission -->
+  <div class="modal-overlay" id="previewModal">
+    <div class="modal" style="max-width: 620px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span data-icon="clipboard-list" data-icon-size="17"></span>
+          <span>Review Problem Report Details</span>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="closeModal('previewModal')" aria-label="Close preview">
+          <span data-icon="x" data-icon-size="17"></span>
+        </button>
+      </div>
+      <div class="modal-body" id="previewModalBody">
+        <!-- Rendered dynamically by JavaScript -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('previewModal')">Back to Edit</button>
+        <button type="button" class="btn btn-primary" id="confirmSubmitBtn">
+          <span>Confirm &amp; Generate Ticket</span>
+          <span data-icon="arrow-right" data-icon-size="14"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Discard Confirmation -->
+  <div class="modal-overlay" id="discardModal">
+    <div class="modal" style="max-width: 440px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span data-icon="alert-triangle" data-icon-size="17" class="text-danger"></span>
+          <span>Discard Complaint?</span>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="closeModal('discardModal')">
+          <span data-icon="x" data-icon-size="17"></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: var(--color-slate-600); margin: 0;">
+          Are you sure you want to discard this report? All entered details and selected photo attachments will be cleared.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('discardModal')">Keep Editing</button>
+        <button type="button" class="btn btn-danger" id="confirmDiscardBtn">Discard &amp; Leave</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Submission Success -->
+  <div class="modal-overlay" id="successModal" data-static-backdrop="true">
+    <div class="modal" style="max-width: 520px;">
+      <div class="modal-header" style="background: #f0fdf4; border-bottom: 1px solid #bbf7d0;">
+        <div class="modal-title" style="color: #166534;">
+          <span data-icon="check-circle-2" data-icon-size="19" class="text-success"></span>
+          <span>Problem Ticket Generated Successfully</span>
+        </div>
+      </div>
+      <div class="modal-body" id="successModalBody">
+        <!-- Populated dynamically with real Ticket ID from Spring Boot -->
+      </div>
+      <div class="modal-footer">
+        <a href="index.html" class="btn btn-primary" style="width: 100%;">
+          <span>View Ticket in Dashboard</span>
+          <span data-icon="arrow-right" data-icon-size="14"></span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // 1. Route guard
+      const user = authManager.requireAuth(["STUDENT"], "../");
+      if (!user) return;
+
+      const userLabel = document.getElementById("studentUserLabel");
+      if (userLabel) {
+        userLabel.textContent = user.fullName || user.email;
+      }
+
+      // 2. Cascading dropdowns
+      setupCascadingLocationDropdowns("blockSelect", "floorSelect", "locationSelect");
+
+      // 3. Pre-fill student phone if known
+      if (user.phoneNumber) {
+        const phoneInput = document.getElementById("phoneInput");
+        if (phoneInput && !phoneInput.value) {
+          phoneInput.value = user.phoneNumber;
+        }
+      }
+
+      // 4. Emergency hazard toggle
+      const emergencyCheckbox = document.getElementById("emergencyCheckbox");
+      const emergencyWarningBox = document.getElementById("emergencyWarningBox");
+      emergencyCheckbox.addEventListener("change", () => {
+        emergencyWarningBox.style.display = emergencyCheckbox.checked ? "block" : "none";
+      });
+
+      // 5. Textarea character counter
+      const descInput = document.getElementById("descriptionInput");
+      const charCounter = document.getElementById("charCounter");
+      descInput.addEventListener("input", () => {
+        const len = descInput.value.length;
+        charCounter.textContent = `${len} / 600`;
+        if (len >= 550) {
+          charCounter.style.color = "#dc2626";
+        } else {
+          charCounter.style.color = "var(--color-slate-500)";
+        }
+      });
+
+      // 6. Multi-file upload dropzone (Up to 5 images)
+      let uploadedFiles = [];
+      const dropzone = document.getElementById("dropzone");
+      const imageInput = document.getElementById("imageInput");
+      const previewContainer = document.getElementById("imagePreviewContainer");
+      const imageError = document.getElementById("imageError");
+
+      dropzone.addEventListener("click", () => imageInput.click());
+
+      dropzone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropzone.classList.add("dragover");
+      });
+
+      dropzone.addEventListener("dragleave", () => {
+        dropzone.classList.remove("dragover");
+      });
+
+      dropzone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropzone.classList.remove("dragover");
+        if (e.dataTransfer && e.dataTransfer.files) {
+          handleFiles(Array.from(e.dataTransfer.files));
+        }
+      });
+
+      imageInput.addEventListener("change", () => {
+        if (imageInput.files) {
+          handleFiles(Array.from(imageInput.files));
+        }
+      });
+
+      function handleFiles(files) {
+        imageError.style.display = "none";
+        const validMimes = ["image/jpeg", "image/png", "image/webp"];
+
+        for (const file of files) {
+          if (!validMimes.includes(file.type)) {
+            showToast(`File "${file.name}" is not a supported format (JPG, PNG, WEBP).`, "danger");
+            continue;
+          }
+          if (file.size > 5 * 1024 * 1024) {
+            showToast(`File "${file.name}" exceeds 5MB limit.`, "danger");
+            continue;
+          }
+          if (uploadedFiles.length >= 5) {
+            imageError.style.display = "block";
+            showToast("Maximum of 5 images allowed.", "warning");
+            break;
+          }
+          uploadedFiles.push(file);
+        }
+        renderPreviews();
+      }
+
+      function renderPreviews() {
+        previewContainer.innerHTML = "";
+        uploadedFiles.forEach((file, index) => {
+          const item = document.createElement("div");
+          item.className = "preview-thumb-item";
+
+          const img = document.createElement("img");
+          img.src = URL.createObjectURL(file);
+          img.alt = `Evidence ${index + 1}`;
+
+          const removeBtn = document.createElement("button");
+          removeBtn.type = "button";
+          removeBtn.className = "preview-thumb-remove";
+          removeBtn.setAttribute("aria-label", "Remove image");
+          removeBtn.innerHTML = getIconSvg("x", { size: 12 });
+          removeBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            uploadedFiles.splice(index, 1);
+            renderPreviews();
+          });
+
+          item.appendChild(img);
+          item.appendChild(removeBtn);
+          previewContainer.appendChild(item);
+        });
+      }
+
+      // 7. Form validation
+      const form = document.getElementById("complaintForm");
+
+      function validateForm() {
+        let valid = true;
+
+        const dept = document.getElementById("departmentSelect");
+        const block = document.getElementById("blockSelect");
+        const floor = document.getElementById("floorSelect");
+        const loc = document.getElementById("locationSelect");
+        const title = document.getElementById("titleInput");
+        const desc = document.getElementById("descriptionInput");
+        const phone = document.getElementById("phoneInput");
+
+        // Department
+        if (!dept.value) {
+          document.getElementById("deptError").style.display = "block";
+          valid = false;
+        } else {
+          document.getElementById("deptError").style.display = "none";
+        }
+
+        // Location
+        if (!block.value) {
+          document.getElementById("blockError").style.display = "block";
+          valid = false;
+        } else {
+          document.getElementById("blockError").style.display = "none";
+        }
+
+        if (!floor.value) {
+          document.getElementById("floorError").style.display = "block";
+          valid = false;
+        } else {
+          document.getElementById("floorError").style.display = "none";
+        }
+
+        if (!loc.value) {
+          document.getElementById("locationError").style.display = "block";
+          valid = false;
+        } else {
+          document.getElementById("locationError").style.display = "none";
+        }
+
+        // Title
+        if (!title.value.trim() || title.value.trim().length < 5) {
+          document.getElementById("titleError").style.display = "block";
+          valid = false;
+        } else {
+          document.getElementById("titleError").style.display = "none";
+        }
+
+        // Description
+        if (!desc.value.trim() || desc.value.trim().length < 15) {
+          document.getElementById("descError").style.display = "block";
+          valid = false;
+        } else {
+          document.getElementById("descError").style.display = "none";
+        }
+
+        // Phone (10 digits)
+        const phoneClean = phone.value.replace(/\D/g, "");
+        if (phoneClean.length < 10) {
+          document.getElementById("phoneError").style.display = "block";
+          valid = false;
+        } else {
+          document.getElementById("phoneError").style.display = "none";
+        }
+
+        return valid;
+      }
+
+      // Preview Modal
+      function showPreview() {
+        if (!validateForm()) {
+          showToast("Please complete all required fields correctly before previewing.", "danger");
+          return;
+        }
+
+        const dept = document.getElementById("departmentSelect").options[document.getElementById("departmentSelect").selectedIndex].text;
+        const block = document.getElementById("blockSelect").value;
+        const floor = document.getElementById("floorSelect").value;
+        const loc = document.getElementById("locationSelect").value;
+        const title = document.getElementById("titleInput").value.trim();
+        const desc = document.getElementById("descriptionInput").value.trim();
+        const phone = document.getElementById("phoneInput").value.trim();
+        const isEmergency = document.getElementById("emergencyCheckbox").checked;
+
+        const modalBody = document.getElementById("previewModalBody");
+        modalBody.innerHTML = `
+          ${isEmergency ? '<div class="badge badge-declined" style="margin-bottom: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;"><span data-icon="alert-triangle" data-icon-size="14"></span> URGENT SAFETY HAZARD FLAGGED</div>' : ''}
+          
+          <div style="background: var(--color-slate-50); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem;">
+            <div><strong style="color: var(--color-slate-500); font-size: 0.75rem; text-transform: uppercase;">Issue Summary:</strong><br><strong style="font-size: 0.95rem; color: var(--color-slate-900);">${escapeHTML(title)}</strong></div>
+            <div><strong style="color: var(--color-slate-500); font-size: 0.75rem; text-transform: uppercase;">Responsible Department:</strong><br>${escapeHTML(dept)}</div>
+            <div><strong style="color: var(--color-slate-500); font-size: 0.75rem; text-transform: uppercase;">Location:</strong><br>${escapeHTML(block)} &bull; ${escapeHTML(floor)} &bull; ${escapeHTML(loc)}</div>
+            <div><strong style="color: var(--color-slate-500); font-size: 0.75rem; text-transform: uppercase;">Student Contact Phone:</strong><br>${escapeHTML(phone)}</div>
+            <div><strong style="color: var(--color-slate-500); font-size: 0.75rem; text-transform: uppercase;">Attached Photos:</strong><br>${uploadedFiles.length} image${uploadedFiles.length === 1 ? '' : 's'} ready for upload</div>
+          </div>
+
+          <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 14px;">
+            <strong style="color: var(--color-slate-500); font-size: 0.75rem; text-transform: uppercase;">Problem Description:</strong>
+            <p style="font-size: 0.85rem; color: var(--color-slate-800); margin: 6px 0 0; line-height: 1.5; white-space: pre-wrap;">${escapeHTML(desc)}</p>
+          </div>
+        `;
+
+        renderAllIcons(modalBody);
+        openModal("previewModal");
+      }
+
+      document.getElementById("previewBtn").addEventListener("click", showPreview);
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        showPreview();
+      });
+
+      // Confirm Submission Handler
+      const confirmSubmitBtn = document.getElementById("confirmSubmitBtn");
+      confirmSubmitBtn.addEventListener("click", async () => {
+        if (!validateForm()) {
+          closeModal("previewModal");
+          showToast("Please fill all required fields correctly.", "danger");
+          return;
+        }
+
+        const originalText = confirmSubmitBtn.innerHTML;
+        confirmSubmitBtn.disabled = true;
+        confirmSubmitBtn.innerHTML = `<span class="icon-spin" data-icon="loader" data-icon-size="14"></span> Submitting to Server...`;
+        renderAllIcons(confirmSubmitBtn);
+
+        const dept = document.getElementById("departmentSelect").value;
+        const block = document.getElementById("blockSelect").value;
+        const floor = document.getElementById("floorSelect").value;
+        const loc = document.getElementById("locationSelect").value;
+        const title = document.getElementById("titleInput").value.trim();
+        const desc = document.getElementById("descriptionInput").value.trim();
+        const phone = document.getElementById("phoneInput").value.trim();
+        const isEmergency = document.getElementById("emergencyCheckbox").checked;
+
+        const idempotencyKey = "ik-" + Date.now() + "-" + Math.random().toString(36).substring(2, 10);
+
+        const formData = new FormData();
+        formData.append("department", dept);
+        formData.append("campusBlock", block);
+        formData.append("floorLevel", floor);
+        formData.append("specificLocation", loc);
+        formData.append("issueTitle", title);
+        formData.append("description", desc);
+        formData.append("studentPhone", phone);
+        formData.append("emergency", isEmergency);
+        formData.append("idempotencyKey", idempotencyKey);
+
+        if (uploadedFiles && uploadedFiles.length > 0) {
+          uploadedFiles.forEach(file => {
+            formData.append("files", file);
+          });
+        }
+
+        try {
+          const res = await apiClient.submitComplaint(formData);
+
+          closeModal("previewModal");
+          confirmSubmitBtn.disabled = false;
+          confirmSubmitBtn.innerHTML = originalText;
+
+          const successBody = document.getElementById("successModalBody");
+          successBody.innerHTML = `
+            <div style="text-align: center; margin-bottom: 1.25rem;">
+              <span class="ticket-id-tag" style="font-size: 1rem; padding: 4px 12px;">
+                TICKET #${escapeHTML(res.ticketId)}
+              </span>
+            </div>
+
+            <div style="background: var(--color-slate-50); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px;">
+              <div><strong>Department:</strong> ${escapeHTML(res.departmentLabel || res.department)}</div>
+              <div><strong>Location:</strong> ${escapeHTML(res.campusBlock)} &bull; ${escapeHTML(res.floorLevel)} &bull; ${escapeHTML(res.specificLocation)}</div>
+              <div><strong>Issue Summary:</strong> ${escapeHTML(res.issueTitle)}</div>
+              <div><strong>Status:</strong> <span class="badge ${getStatusBadgeClass(res.status)}">${escapeHTML(res.status)}</span></div>
+              <div><strong>Submitted At:</strong> ${formatDate(res.submittedAt)}</div>
+              ${res.imageUrls && res.imageUrls.length > 0 ? `<div><strong>Attachments:</strong> ${res.imageUrls.length} file(s) recorded</div>` : ''}
+              ${res.emergency ? '<div style="color: #b91c1c; font-weight: 700;">Emergency Priority Flagged</div>' : ''}
+            </div>
+          `;
+
+          openModal("successModal");
+          showToast(`Ticket ${res.ticketId} created successfully!`, "success");
+
+        } catch (err) {
+          confirmSubmitBtn.disabled = false;
+          confirmSubmitBtn.innerHTML = originalText;
+          showToast(`Submission failed: ${err.message}`, "danger");
+          console.error("Submission error:", err);
+        }
+      });
+
+      // Discard Handler
+      document.getElementById("discardBtn").addEventListener("click", () => {
+        openModal("discardModal");
+      });
+
+      document.getElementById("confirmDiscardBtn").addEventListener("click", () => {
+        closeModal("discardModal");
+        window.location.href = "index.html";
+      });
+    });
+
+    /**
+     * Collapsible Sidebar logic
+     */
+    function toggleSidebar(forceState) {
+      const sidebar = document.getElementById("studentSidebar");
+      const toggleBtn = document.getElementById("sidebarToggleBtn");
+      const backdrop = document.getElementById("sidebarBackdrop");
+      if (!sidebar) return;
+
+      if (window.innerWidth <= 900) {
+        const nextOpen = (typeof forceState === "boolean") ? forceState : !sidebar.classList.contains("open");
+        sidebar.classList.toggle("open", nextOpen);
+        if (backdrop) backdrop.classList.toggle("active", nextOpen);
+        return;
+      }
+
+      const isCollapsed = sidebar.classList.contains("collapsed");
+      const nextCollapsed = (typeof forceState === "boolean") ? !forceState : !isCollapsed;
+
+      sidebar.classList.toggle("collapsed", nextCollapsed);
+      if (toggleBtn) {
+        toggleBtn.innerHTML = nextCollapsed 
+          ? getIconSvg("chevron-right", { size: 14 }) 
+          : getIconSvg("chevron-left", { size: 14 });
+        toggleBtn.title = nextCollapsed ? "Expand sidebar" : "Collapse sidebar";
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+# Root gitignore
+backend/.gradle/
+backend/build/
+*.log
+.idea/
+.vscode/
+
+# Local sensitive configs
+backend/src/main/resources/application-local.properties
+backend/application-local.properties
+.env
+
+# Local testing files and generated assets
+/scratch/
+
+# Gradle generated files
+/backend/.gradle/
+/backend/build/
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# User-uploaded complaint and completion evidence
+/backend/uploads/

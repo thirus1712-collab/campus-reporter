@@ -1,0 +1,24 @@
+# Gradle build files
+.gradle/
+build/
+out/
+
+# Retain the wrapper jar and properties
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# IDE & Editor files
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# Compiled classes & logs
+*.class
+*.log
+
+# Sensitive / local override configuration files
+application-local.properties
+.env

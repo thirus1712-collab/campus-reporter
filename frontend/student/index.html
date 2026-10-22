@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en" data-portal="student">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Portal &bull; Smart Campus Maintenance</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/dashboard.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Top Navigation Bar (Academic Slate + Teal) -->
+  <nav class="navbar" aria-label="Student Navigation">
+    <div class="container navbar-inner" style="max-width: 100%; padding: 0 1.5rem;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button 
+          type="button" 
+          class="sidebar-toggle-btn" 
+          id="studentSidebarToggle" 
+          aria-label="Toggle navigation sidebar" 
+          title="Toggle navigation sidebar"
+          onclick="toggleSidebar()"
+          style="background: var(--color-slate-100); border: 1px solid var(--border-color); color: var(--color-slate-700);"
+        >
+          <span data-icon="menu" data-icon-size="16"></span>
+        </button>
+        <a href="index.html" class="navbar-brand">
+          <div class="brand-icon-wrap" data-icon="building" data-icon-size="16"></div>
+          <span>Smart Campus</span>
+        </a>
+      </div>
+      <ul class="navbar-nav">
+        <li>
+          <span style="font-size: 0.8rem; color: var(--color-slate-500); display: flex; align-items: center; gap: 5px;">
+            <span data-icon="user" data-icon-size="13"></span>
+            <span id="studentUserLabel">Student</span>
+          </span>
+        </li>
+        <li>
+          <a href="#" onclick="authManager.logout('../login.html'); return false;" title="Sign out of student portal">
+            <span data-icon="log-out" data-icon-size="14"></span>
+            <span>Logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Portal Layout with Collapsible Sidebar -->
+  <div class="portal-layout-wrapper">
+    <!-- Mobile Backdrop for Sidebar -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar(false)"></div>
+
+    <!-- Collapsible Sidebar -->
+    <aside class="portal-sidebar" id="studentSidebar" aria-label="Student Navigation">
+      <div class="sidebar-header">
+        <span class="sidebar-title">Navigation</span>
+        <button 
+          type="button" 
+          class="sidebar-toggle-btn" 
+          id="sidebarToggleBtn" 
+          onclick="toggleSidebar()" 
+          aria-label="Collapse navigation sidebar" 
+          title="Collapse or expand sidebar"
+        >
+          <span data-icon="chevron-left" data-icon-size="14"></span>
+        </button>
+      </div>
+      <ul class="sidebar-nav">
+        <!-- 1. Dashboard -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#dashboard" 
+            class="sidebar-link active" 
+            id="navStudentDashboard" 
+            data-view="dashboard" 
+            title="Dashboard"
+            onclick="switchStudentView('dashboard'); return false;"
+          >
+            <span class="sidebar-icon" data-icon="clipboard-list" data-icon-size="16"></span>
+            <span class="sidebar-text">Dashboard</span>
+          </a>
+        </li>
+
+        <!-- 2. Report New Problem -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="new-complaint.html" 
+            class="sidebar-link" 
+            id="navStudentReport" 
+            data-view="report" 
+            title="Report New Problem"
+          >
+            <span class="sidebar-icon" data-icon="plus" data-icon-size="16"></span>
+            <span class="sidebar-text">Report New Problem</span>
+          </a>
+        </li>
+
+        <!-- 3. Submitted -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#submitted" 
+            class="sidebar-link" 
+            id="navStudentSubmitted" 
+            data-view="SUBMITTED" 
+            title="Submitted"
+            onclick="switchStudentView('SUBMITTED'); return false;"
+          >
+            <span class="sidebar-icon" data-icon="inbox" data-icon-size="16"></span>
+            <span class="sidebar-text">Submitted</span>
+          </a>
+        </li>
+
+        <!-- 4. Under Review -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#under_review" 
+            class="sidebar-link" 
+            id="navStudentReview" 
+            data-view="UNDER_REVIEW" 
+            title="Under Review"
+            onclick="switchStudentView('UNDER_REVIEW'); return false;"
+          >
+            <span class="sidebar-icon" data-icon="clock" data-icon-size="16"></span>
+            <span class="sidebar-text">Under Review</span>
+          </a>
+        </li>
+
+        <!-- 5. In Progress -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#in_progress" 
+            class="sidebar-link" 
+            id="navStudentProgress" 
+            data-view="IN_PROGRESS" 
+            title="In Progress"
+            onclick="switchStudentView('IN_PROGRESS'); return false;"
+          >
+            <span class="sidebar-icon" data-icon="wrench" data-icon-size="16"></span>
+            <span class="sidebar-text">In Progress</span>
+          </a>
+        </li>
+
+        <!-- 6. Awaiting Student Verification -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#awaiting_verification" 
+            class="sidebar-link" 
+            id="navStudentVerification" 
+            data-view="AWAITING_VERIFICATION" 
+            title="Awaiting Student Verification"
+            onclick="switchStudentView('AWAITING_VERIFICATION'); return false;"
+          >
+            <span class="sidebar-icon" data-icon="check-circle-2" data-icon-size="16"></span>
+            <span class="sidebar-text">Awaiting Student Verification</span>
+          </a>
+        </li>
+
+        <!-- 7. Resolved -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#resolved" 
+            class="sidebar-link" 
+            id="navStudentResolved" 
+            data-view="RESOLVED" 
+            title="Resolved"
+            onclick="switchStudentView('RESOLVED'); return false;"
+          >
+            <span class="sidebar-icon" data-icon="check" data-icon-size="16"></span>
+            <span class="sidebar-text">Resolved</span>
+          </a>
+        </li>
+
+        <!-- 8. Closed -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#closed" 
+            class="sidebar-link" 
+            id="navStudentClosed" 
+            data-view="CLOSED" 
+            title="Closed"
+            onclick="switchStudentView('CLOSED'); return false;"
+          >
+            <span class="sidebar-icon" data-icon="shield" data-icon-size="16"></span>
+            <span class="sidebar-text">Closed</span>
+          </a>
+        </li>
+
+        <!-- 9. Declined -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#declined" 
+            class="sidebar-link" 
+            id="navStudentDeclined" 
+            data-view="DECLINED" 
+            title="Declined"
+            onclick="switchStudentView('DECLINED'); return false;"
+          >
+            <span class="sidebar-icon" data-icon="x-circle" data-icon-size="16"></span>
+            <span class="sidebar-text">Declined</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="portal-main-wrap">
+
+      <!-- Action Bar: Report New Problem -->
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+        <a href="new-complaint.html" class="btn btn-primary btn-sm" id="btnReportNewProblem">
+          <span data-icon="plus" data-icon-size="14"></span>
+          <span>Report New Problem</span>
+        </a>
+      </div>
+
+      <!-- 7 Compact Metric Panels (Including New Declined Card) -->
+      <div class="metrics-grid-student" id="studentMetricsGrid" role="region" aria-label="Complaint Lifecycle Metrics">
+        <!-- 1. Total Complaints -->
+        <div class="metric-card" id="cardTotal" data-status-filter="ALL" role="button" tabindex="0" title="Click to view all complaints">
+          <span class="metric-active-badge" aria-hidden="true"></span>
+          <div class="metric-card-top">
+            <div class="metric-info">
+              <h4>Total</h4>
+            </div>
+            <div class="metric-icon-small" data-icon="clipboard-list" data-icon-size="14"></div>
+          </div>
+          <div class="metric-value" id="metricTotal">0</div>
+        </div>
+
+        <!-- 2. Submitted (New) -->
+        <div class="metric-card" id="cardSubmitted" data-status-filter="SUBMITTED" role="button" tabindex="0" title="Click to view submitted complaints">
+          <span class="metric-active-badge" aria-hidden="true"></span>
+          <div class="metric-card-top">
+            <div class="metric-info">
+              <h4>Submitted</h4>
+            </div>
+            <div class="metric-icon-small" data-icon="inbox" data-icon-size="14"></div>
+          </div>
+          <div class="metric-value" id="metricSubmitted">0</div>
+        </div>
+
+        <!-- 3. Under Review -->
+        <div class="metric-card" id="cardReview" data-status-filter="UNDER_REVIEW" role="button" tabindex="0" title="Click to view under review complaints">
+          <span class="metric-active-badge" aria-hidden="true"></span>
+          <div class="metric-card-top">
+            <div class="metric-info">
+              <h4>Under Review</h4>
+            </div>
+            <div class="metric-icon-small" data-icon="clock" data-icon-size="14"></div>
+          </div>
+          <div class="metric-value" id="metricReview">0</div>
+        </div>
+
+        <!-- 4. In Progress -->
+        <div class="metric-card" id="cardProgress" data-status-filter="IN_PROGRESS" role="button" tabindex="0" title="Click to view in progress complaints">
+          <span class="metric-active-badge" aria-hidden="true"></span>
+          <div class="metric-card-top">
+            <div class="metric-info">
+              <h4>In Progress</h4>
+            </div>
+            <div class="metric-icon-small" data-icon="wrench" data-icon-size="14"></div>
+          </div>
+          <div class="metric-value" id="metricProgress">0</div>
+        </div>
+
+        <!-- 5. Student Verification -->
+        <div class="metric-card" id="cardVerification" data-status-filter="AWAITING_VERIFICATION" role="button" tabindex="0" title="Click to view complaints awaiting your verification">
+          <span class="metric-active-badge" aria-hidden="true"></span>
+          <div class="metric-card-top">
+            <div class="metric-info">
+              <h4>Verification</h4>
+            </div>
+            <div class="metric-icon-small" data-icon="check-circle-2" data-icon-size="14"></div>
+          </div>
+          <div class="metric-value" id="metricVerification">0</div>
+        </div>
+
+        <!-- 6. Resolved & Closed -->
+        <div class="metric-card" id="cardResolved" data-status-filter="RESOLVED" role="button" tabindex="0" title="Click to view resolved and closed complaints">
+          <span class="metric-active-badge" aria-hidden="true"></span>
+          <div class="metric-card-top">
+            <div class="metric-info">
+              <h4>Resolved</h4>
+            </div>
+            <div class="metric-icon-small" data-icon="check" data-icon-size="14"></div>
+          </div>
+          <div class="metric-value" id="metricResolved">0</div>
+        </div>
+
+        <!-- 7. Declined (New Card) -->
+        <div class="metric-card" id="cardDeclined" data-status-filter="DECLINED" role="button" tabindex="0" title="Click to view declined complaints">
+          <span class="metric-active-badge" aria-hidden="true"></span>
+          <div class="metric-card-top">
+            <div class="metric-info">
+              <h4>Declined</h4>
+            </div>
+            <div class="metric-icon-small" data-icon="x-circle" data-icon-size="14"></div>
+          </div>
+          <div class="metric-value" id="metricDeclined">0</div>
+        </div>
+      </div>
+
+      <!-- Complaints Toolbar & Filters (No filter notification banner) -->
+      <div class="toolbar">
+        <div class="toolbar-filters">
+          <div style="position: relative; flex: 1; max-width: 280px;">
+            <input 
+              type="search" 
+              id="searchFilter" 
+              class="form-control" 
+              placeholder="Search ticket ID or location..."
+              style="padding-left: 32px;"
+            >
+            <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--color-slate-400); pointer-events: none;" data-icon="search" data-icon-size="14"></span>
+          </div>
+          <select id="categoryFilter" class="form-select" aria-label="Filter by department">
+            <option value="">All Departments</option>
+            <option value="ELECTRICAL">Electrical Department</option>
+            <option value="PLUMBING">Plumbing Department</option>
+            <option value="CLEANING">Cleaning Department</option>
+            <option value="IT_SUPPORT">IT &amp; Technical Support</option>
+          </select>
+          <select id="statusFilter" class="form-select" aria-label="Filter by status" style="display: none;">
+            <option value="">All Statuses (Dashboard)</option>
+            <option value="SUBMITTED">Submitted</option>
+            <option value="UNDER_REVIEW">Under Review</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="AWAITING_VERIFICATION">Awaiting Student Verification</option>
+            <option value="RESOLVED">Resolved</option>
+            <option value="CLOSED">Closed</option>
+            <option value="DECLINED">Declined</option>
+          </select>
+        </div>
+        <div class="toolbar-actions">
+          <span id="tableCount">Showing 0 complaints</span>
+        </div>
+      </div>
+
+      <!-- Complaints Table Container -->
+      <div class="table-responsive">
+        <table class="table" id="complaintsTable">
+          <thead>
+            <tr>
+              <th>Ticket ID</th>
+              <th>Date &amp; Time</th>
+              <th>Department</th>
+              <th>Campus Location</th>
+              <th>Issue Summary</th>
+              <th>Status</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="complaintsTableBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Contextual Empty State Display (No banner, clean message) -->
+      <div class="empty-state-panel" id="emptyStateContainer" style="display: none;">
+        <div class="empty-state-icon" id="emptyStateIcon">
+          <span data-icon="inbox" data-icon-size="24"></span>
+        </div>
+        <h3 class="empty-state-title" id="emptyStateTitle">No Complaints Found</h3>
+        <p class="empty-state-desc" id="emptyStateDesc">
+          There are currently no complaints matching your selected criteria.
+        </p>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Modal: Structured Ticket Details -->
+  <div class="modal-overlay" id="ticketDetailsModal">
+    <div class="modal" style="max-width: 780px;">
+      
+      <!-- Top Pinned Header -->
+      <div class="modal-header">
+        <div class="modal-title">
+          <span data-icon="file-text" data-icon-size="18" style="color: var(--portal-accent);"></span>
+          <span id="detailIssueTitle">Ticket Details</span>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="closeModal('ticketDetailsModal')" aria-label="Close details">
+          <span data-icon="x" data-icon-size="18"></span>
+        </button>
+      </div>
+
+      <!-- Ticket Scrollable Body Content -->
+      <div class="modal-body" id="detailBodyContent">
+        
+        <!-- Structured Information Section rendered dynamically -->
+        <div id="detailStructuredMeta"></div>
+
+        <!-- Student Verification Action Box (if status is Awaiting Verification) -->
+        <div id="detailVerificationBox" style="display: none; margin-top: 14px; margin-bottom: 14px; padding: 14px; border: 1px solid #fed7aa; border-left: 4px solid #ea580c; border-radius: var(--radius-md); background: #fff7ed;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <span style="color: #ea580c;" data-icon="check-circle-2" data-icon-size="18"></span>
+            <strong style="color: #9a3412; font-size: 0.95rem;">Technician Repair Verification Required</strong>
+          </div>
+          <p style="font-size: 0.825rem; color: #7c2d12; margin: 0 0 10px 0; line-height: 1.45;">
+            The department has completed physical work and submitted proof. Please review the repair evidence above. If the issue is fixed to your satisfaction, confirm and close this ticket. If the problem persists, dispute it to request immediate rework.
+          </p>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-sm btn-success" id="confirmVerificationBtn">
+              <span data-icon="check" data-icon-size="14"></span>
+              <span>Confirm Repair &amp; Close Ticket</span>
+            </button>
+            <button type="button" class="btn btn-sm btn-outline" style="color: #b91c1c; border-color: #fca5a5;" id="disputeRepairBtn">
+              <span data-icon="alert-triangle" data-icon-size="14"></span>
+              <span>Dispute / Request Rework</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Progress Timeline (5-Step Horizontal Tracker) -->
+        <div class="progress-stepper-panel">
+          <div class="progress-stepper-header">
+            <span data-icon="clock" data-icon-size="14"></span>
+            <span>Progress Stepper Timeline</span>
+          </div>
+          <div class="tracker-container">
+            <div class="tracker-line">
+              <div class="tracker-line-fill" id="trackerLineFill" style="width: 0%;"></div>
+            </div>
+
+            <!-- Step 1: Submitted -->
+            <div class="tracker-node-wrapper">
+              <div class="tracker-circle" id="node1">1</div>
+              <div class="tracker-title" id="nodeTitle1">Submitted</div>
+              <div class="tracker-subtitle" id="nodeSub1">—</div>
+            </div>
+
+            <!-- Step 2: Under Review -->
+            <div class="tracker-node-wrapper">
+              <div class="tracker-circle" id="node2">2</div>
+              <div class="tracker-title" id="nodeTitle2">Under Review</div>
+              <div class="tracker-subtitle" id="nodeSub2">Pending review</div>
+            </div>
+
+            <!-- Step 3: In Progress -->
+            <div class="tracker-node-wrapper">
+              <div class="tracker-circle" id="node3">3</div>
+              <div class="tracker-title" id="nodeTitle3">In Progress</div>
+              <div class="tracker-subtitle" id="nodeSub3">Scheduled</div>
+            </div>
+
+            <!-- Step 4: Verification -->
+            <div class="tracker-node-wrapper">
+              <div class="tracker-circle" id="node4">4</div>
+              <div class="tracker-title" id="nodeTitle4">Verification</div>
+              <div class="tracker-subtitle" id="nodeSub4">Repair evidence</div>
+            </div>
+
+            <!-- Step 5: Closed -->
+            <div class="tracker-node-wrapper">
+              <div class="tracker-circle" id="node5">5</div>
+              <div class="tracker-title" id="nodeTitle5">Closed</div>
+              <div class="tracker-subtitle" id="nodeSub5">Resolved</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Pinned Footer Action -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('ticketDetailsModal')">
+          Close Window
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script>
+    // State
+    let myComplaints = [];
+    let currentViewingTicketId = null;
+    let activeStudentView = "dashboard"; // "dashboard" or status string
+
+    const STATUS_MAP = {
+      SUBMITTED: ["SUBMITTED"],
+      UNDER_REVIEW: ["UNDER_REVIEW"],
+      IN_PROGRESS: ["IN_PROGRESS", "REWORK_REQUIRED"],
+      AWAITING_VERIFICATION: ["AWAITING_VERIFICATION"],
+      RESOLVED: ["RESOLVED", "CLOSED"],
+      CLOSED: ["CLOSED", "RESOLVED"],
+      DECLINED: ["DECLINED"]
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // 1. Guard route: ensure authenticated student
+      const user = authManager.requireAuth(["STUDENT"], "../");
+      if (!user) return;
+
+      const userLabel = document.getElementById("studentUserLabel");
+      if (userLabel) {
+        userLabel.textContent = user.fullName || user.email;
+      }
+
+      // 2. Wire card click listeners
+      initStudentCardClicks();
+
+      // 3. Attach filter listeners
+      document.getElementById("searchFilter").addEventListener("input", filterAndRenderComplaints);
+      document.getElementById("categoryFilter").addEventListener("change", filterAndRenderComplaints);
+      document.getElementById("statusFilter").addEventListener("change", (e) => {
+        const val = e.target.value.trim().toUpperCase();
+        if (!val) {
+          switchStudentView("dashboard");
+        } else {
+          switchStudentView(val);
+        }
+      });
+
+      // 4. Verification action listeners
+      document.getElementById("confirmVerificationBtn").addEventListener("click", confirmResolution);
+      document.getElementById("disputeRepairBtn").addEventListener("click", disputeRepair);
+
+      // 5. Check hash on page load and on hash change
+      const applyHash = () => {
+        const hash = (window.location.hash || "").replace("#", "").toUpperCase();
+        if (hash && (STATUS_MAP[hash] || hash === "ALL")) {
+          switchStudentView(hash);
+        } else if (hash === "DASHBOARD") {
+          switchStudentView("dashboard");
+        }
+      };
+
+      const initialHash = (window.location.hash || "").replace("#", "").toUpperCase();
+      if (initialHash && (STATUS_MAP[initialHash] || initialHash === "ALL")) {
+        activeStudentView = initialHash;
+      } else {
+        activeStudentView = "dashboard";
+      }
+
+      window.addEventListener("hashchange", applyHash);
+
+      // 6. Load initial data from Spring Boot REST API
+      loadMyComplaints();
+    });
+
+    /**
+     * Collapsible Sidebar logic
+     */
+    function toggleSidebar(forceState) {
+      const sidebar = document.getElementById("studentSidebar");
+      const toggleBtn = document.getElementById("sidebarToggleBtn");
+      const backdrop = document.getElementById("sidebarBackdrop");
+      if (!sidebar) return;
+
+      if (window.innerWidth <= 900) {
+        const nextOpen = (typeof forceState === "boolean") ? forceState : !sidebar.classList.contains("open");
+        sidebar.classList.toggle("open", nextOpen);
+        if (backdrop) backdrop.classList.toggle("active", nextOpen);
+        return;
+      }
+
+      const isCollapsed = sidebar.classList.contains("collapsed");
+      const nextCollapsed = (typeof forceState === "boolean") ? !forceState : !isCollapsed;
+
+      sidebar.classList.toggle("collapsed", nextCollapsed);
+      if (toggleBtn) {
+        toggleBtn.innerHTML = nextCollapsed 
+          ? getIconSvg("chevron-right", { size: 14 }) 
+          : getIconSvg("chevron-left", { size: 14 });
+        toggleBtn.title = nextCollapsed ? "Expand sidebar" : "Collapse sidebar";
+      }
+    }
+
+    /**
+     * Switch between Dashboard (5 recent tickets) and Status-Filtered Views
+     */
+    function switchStudentView(viewKey) {
+      activeStudentView = viewKey;
+
+      const isDashboard = (viewKey === "dashboard");
+
+      // 1. Show summary cards ONLY on Dashboard; hide on every status-specific page
+      const metricsGrid = document.getElementById("studentMetricsGrid");
+      if (metricsGrid) {
+        metricsGrid.style.display = isDashboard ? "" : "none";
+      }
+
+      // 2. Update sidebar active link
+      document.querySelectorAll(".sidebar-link").forEach(link => {
+        const itemKey = link.getAttribute("data-view");
+        const isActive = (itemKey === viewKey);
+        link.classList.toggle("active", isActive);
+      });
+
+      // 3. Update summary cards active state
+      document.querySelectorAll(".metrics-grid-student .metric-card").forEach(c => {
+        const cardKey = c.getAttribute("data-status-filter");
+        if (isDashboard) {
+          c.classList.remove("active");
+        } else {
+          const isMatch = (cardKey === viewKey) || 
+            ((viewKey === "RESOLVED" || viewKey === "CLOSED") && (cardKey === "RESOLVED" || cardKey === "CLOSED"));
+          c.classList.toggle("active", isMatch);
+        }
+      });
+
+      // 4. Synchronize status dropdown in toolbar
+      const statusSelect = document.getElementById("statusFilter");
+      if (statusSelect) {
+        if (viewKey === "dashboard" || viewKey === "ALL") {
+          statusSelect.value = "";
+        } else {
+          statusSelect.value = viewKey;
+        }
+      }
+
+      // 5. Auto-close sidebar on mobile
+      if (window.innerWidth <= 900) {
+        toggleSidebar(false);
+      }
+
+      filterAndRenderComplaints();
+    }
+
+    /**
+     * Initialize summary cards click and keyboard accessibility
+     */
+    function initStudentCardClicks() {
+      const cards = document.querySelectorAll(".metrics-grid-student .metric-card");
+      cards.forEach(card => {
+        card.addEventListener("click", () => {
+          const filterKey = card.getAttribute("data-status-filter") || "ALL";
+          const isCurrentlyActive = (activeStudentView === filterKey) ||
+            ((filterKey === "RESOLVED" || filterKey === "CLOSED") && (activeStudentView === "RESOLVED" || activeStudentView === "CLOSED"));
+          if (isCurrentlyActive) {
+            // Clicking currently active card returns to dashboard view
+            switchStudentView("dashboard");
+          } else {
+            switchStudentView(filterKey);
+          }
+        });
+
+        card.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            card.click();
+          }
+        });
+      });
+    }
+
+    /**
+     * Load authenticated student's complaints and metrics
+     */
+    async function loadMyComplaints() {
+      const tableBody = document.getElementById("complaintsTableBody");
+      tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--color-slate-500);"><span class="icon-spin" data-icon="loader" data-icon-size="18"></span> Loading your complaints from database...</td></tr>';
+      renderAllIcons(tableBody);
+
+      try {
+        const [complaints, metrics] = await Promise.all([
+          apiClient.getMyComplaints(),
+          apiClient.getStudentMetrics()
+        ]);
+
+        myComplaints = Array.isArray(complaints) ? complaints : [];
+
+        updateDashboardMetrics(metrics, myComplaints);
+        switchStudentView(activeStudentView);
+
+      } catch (err) {
+        console.error("Failed to load complaints:", err);
+        tableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--color-danger);">
+          Failed to fetch complaints: ${escapeHTML(err.message)}. <br>
+          <button class="btn btn-sm btn-outline" style="margin-top: 8px;" onclick="loadMyComplaints()">Retry</button>
+        </td></tr>`;
+        showToast("Could not load complaints from server", "danger");
+      }
+    }
+
+    function updateDashboardMetrics(metricsObj, list) {
+      const norm = (s) => String(s || "").toUpperCase().replace(/\s+/g, "_");
+
+      const totalCount = (metricsObj && typeof metricsObj.total === 'number') ? metricsObj.total : list.length;
+      const submittedCount = (metricsObj && typeof metricsObj.submitted === 'number') ? metricsObj.submitted : list.filter(c => norm(c.statusCode || c.status) === "SUBMITTED").length;
+      const reviewCount = (metricsObj && typeof metricsObj.underReview === 'number') ? metricsObj.underReview : list.filter(c => norm(c.statusCode || c.status) === "UNDER_REVIEW").length;
+      const progressCount = (metricsObj && typeof metricsObj.inProgress === 'number') ? metricsObj.inProgress : list.filter(c => norm(c.statusCode || c.status) === "IN_PROGRESS").length;
+      const verificationCount = (metricsObj && (typeof metricsObj.awaitingVerification === 'number' || typeof metricsObj.studentVerification === 'number'))
+        ? (metricsObj.awaitingVerification ?? metricsObj.studentVerification)
+        : list.filter(c => norm(c.statusCode || c.status) === "AWAITING_VERIFICATION").length;
+      const resolvedCount = (metricsObj && typeof metricsObj.closed === 'number') ? metricsObj.closed : list.filter(c => ["RESOLVED", "CLOSED"].includes(norm(c.statusCode || c.status))).length;
+      const declinedCount = (metricsObj && typeof metricsObj.declined === 'number') ? metricsObj.declined : list.filter(c => norm(c.statusCode || c.status) === "DECLINED").length;
+
+      document.getElementById("metricTotal").textContent = totalCount;
+      document.getElementById("metricSubmitted").textContent = submittedCount;
+      document.getElementById("metricReview").textContent = reviewCount;
+      document.getElementById("metricProgress").textContent = progressCount;
+      document.getElementById("metricVerification").textContent = verificationCount;
+      document.getElementById("metricResolved").textContent = resolvedCount;
+      document.getElementById("metricDeclined").textContent = declinedCount;
+    }
+
+    /**
+     * Filter and render complaints table
+     */
+    function filterAndRenderComplaints() {
+      const search = (document.getElementById("searchFilter").value || "").trim().toLowerCase();
+      const catFilter = document.getElementById("categoryFilter").value;
+      const norm = (s) => String(s || "").toUpperCase().replace(/\s+/g, "_");
+
+      // 1. Status Filter matching
+      let filtered = myComplaints.filter(c => {
+        const sUpper = norm(c.statusCode || c.status);
+
+        let matchesStatus = true;
+        if (activeStudentView === "dashboard" || activeStudentView === "ALL") {
+          matchesStatus = true;
+        } else if (STATUS_MAP[activeStudentView]) {
+          matchesStatus = STATUS_MAP[activeStudentView].includes(sUpper);
+        } else {
+          matchesStatus = (sUpper === activeStudentView);
+        }
+
+        // 2. Department Filter
+        const matchesDept = !catFilter || (c.department && c.department.toUpperCase() === catFilter);
+
+        // 3. Search Filter across ticketId, location, issueTitle, description
+        const locationStr = `${c.campusBlock || ""} ${c.floorLevel || ""} ${c.specificLocation || ""}`.toLowerCase();
+        const matchesSearch = !search ||
+          (c.ticketId && c.ticketId.toLowerCase().includes(search)) ||
+          locationStr.includes(search) ||
+          (c.issueTitle && c.issueTitle.toLowerCase().includes(search)) ||
+          (c.description && c.description.toLowerCase().includes(search));
+
+        return matchesStatus && matchesDept && matchesSearch;
+      });
+
+      // If in Dashboard view, display only the 5 most recently submitted tickets
+      const isDashboardMode = (activeStudentView === "dashboard");
+      let listToRender = filtered;
+      if (isDashboardMode) {
+        listToRender = filtered.slice(0, 5);
+      }
+
+      // Update table count indicator
+      const tableCount = document.getElementById("tableCount");
+      if (isDashboardMode) {
+        tableCount.textContent = `Showing ${listToRender.length} recent complaint${listToRender.length === 1 ? '' : 's'}`;
+      } else {
+        tableCount.textContent = `Showing ${filtered.length} complaint${filtered.length === 1 ? '' : 's'}`;
+      }
+
+      renderTable(listToRender);
+    }
+
+    function renderTable(list) {
+      const tableBody = document.getElementById("complaintsTableBody");
+      const emptyContainer = document.getElementById("emptyStateContainer");
+      const tableContainer = document.querySelector(".table-responsive");
+
+      if (!list || list.length === 0) {
+        tableBody.innerHTML = "";
+        tableContainer.style.display = "none";
+        emptyContainer.style.display = "block";
+
+        const title = document.getElementById("emptyStateTitle");
+        const desc = document.getElementById("emptyStateDesc");
+
+        if (activeStudentView !== "dashboard") {
+          title.textContent = "No Complaints in this Category";
+          desc.textContent = "No complaints currently match your active status or filter selection.";
+        } else {
+          title.textContent = "No Complaints Filed Yet";
+          desc.textContent = "You have not submitted any campus infrastructure issues yet.";
+        }
+        renderAllIcons(emptyContainer);
+        return;
+      }
+
+      tableContainer.style.display = "block";
+      emptyContainer.style.display = "none";
+
+      tableBody.innerHTML = list.map(c => {
+        const deptKey = String(c.department || "").toUpperCase();
+        let deptClass = "it";
+        let deptIcon = "monitor";
+        if (deptKey.includes("ELECT")) { deptClass = "electrical"; deptIcon = "zap"; }
+        else if (deptKey.includes("PLUMB")) { deptClass = "plumbing"; deptIcon = "droplets"; }
+        else if (deptKey.includes("CLEAN")) { deptClass = "cleaning"; deptIcon = "sparkles"; }
+
+        return `
+          <tr>
+            <td>
+              <span class="ticket-id-tag">
+                ${escapeHTML(c.ticketId)}
+              </span>
+            </td>
+            <td style="font-size: 0.8rem; color: var(--color-slate-600); white-space: nowrap;">
+              ${formatDate(c.submittedAt)}
+            </td>
+            <td>
+              <span class="dept-pill dept-pill-${deptClass}">
+                <span class="dept-pill-icon" data-icon="${deptIcon}" data-icon-size="13"></span>
+                <span>${escapeHTML(c.departmentLabel || c.department)}</span>
+              </span>
+            </td>
+            <td>
+              <span style="font-weight: 600; color: var(--color-slate-800);">${escapeHTML(c.campusBlock || c.block || "Campus")}</span>
+              <span style="color: var(--color-slate-400); font-size: 0.8rem;"> &bull; ${escapeHTML(c.floorLevel || c.floor || "Floor")} &bull; ${escapeHTML(c.specificLocation || "")}</span>
+            </td>
+            <td>
+              ${c.emergency ? '<span class="badge badge-declined" style="font-size:0.68rem; padding: 1px 5px; margin-right: 4px;">EMERGENCY</span> ' : ''}
+              <span style="font-weight: 500;">${escapeHTML(c.issueTitle)}</span>
+            </td>
+            <td>
+              <span class="badge ${getStatusBadgeClass(c.status)}">
+                ${escapeHTML(c.status)}
+              </span>
+            </td>
+            <td style="text-align: right; white-space: nowrap;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="viewComplaintDetails('${escapeHTML(c.ticketId)}')">
+                <span data-icon="eye" data-icon-size="13"></span>
+                <span>View Details</span>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      renderAllIcons(tableBody);
+    }
+
+    /**
+     * View Details Modal with structured metadata, SLA countdown, and 5-step lifecycle
+     */
+    async function viewComplaintDetails(ticketId) {
+      currentViewingTicketId = ticketId;
+      let c = myComplaints.find(item => item.ticketId === ticketId);
+
+      try {
+        const serverData = await apiClient.getComplaint(ticketId);
+        if (serverData && serverData.ticketId) {
+          c = serverData;
+        }
+      } catch (err) {
+        console.warn("Using cached ticket details:", err);
+      }
+
+      if (!c) {
+        showToast("Ticket details not found.", "danger");
+        return;
+      }
+
+      // 1. Header Title & Ticket ID
+      const titleEl = document.getElementById("detailIssueTitle");
+      if (titleEl) {
+        titleEl.innerHTML = `${escapeHTML(c.issueTitle || "Campus Problem Report")} &bull; <span class="ticket-id-tag">${escapeHTML(c.ticketId || "")}</span>`;
+      }
+
+      // 2. Render Structured Metadata Cards & Evidence
+      const metaContainer = document.getElementById("detailStructuredMeta");
+      if (metaContainer) {
+        metaContainer.innerHTML = renderStructuredComplaintMetadata(c, { isStudent: true });
+        renderAllIcons(metaContainer);
+      }
+
+      // 3. Handle Student Verification Box Actions
+      const verifBox = document.getElementById("detailVerificationBox");
+      const normStatus = String(c.statusCode || c.status || "").toUpperCase().replace(/\s+/g, "_");
+
+      if (verifBox) {
+        if (normStatus === "AWAITING_VERIFICATION" || normStatus.includes("VERIFICATION")) {
+          verifBox.style.display = "block";
+        } else {
+          verifBox.style.display = "none";
+        }
+      }
+
+      // 4. Render 5-Stage Horizontal Tracker
+      renderProgressTracker(c);
+
+      openModal("ticketDetailsModal");
+      if (typeof initSlaCountdownTimer === "function") {
+        initSlaCountdownTimer(c, `slaCountdownContainer_${c.ticketId}`);
+      }
+    }
+
+    function renderProgressTracker(c) {
+      const normStatus = String(c.statusCode || c.status || "").toUpperCase().replace(/\s+/g, "_");
+
+      const nodes = [
+        document.getElementById("node1"),
+        document.getElementById("node2"),
+        document.getElementById("node3"),
+        document.getElementById("node4"),
+        document.getElementById("node5")
+      ];
+
+      const titles = [
+        document.getElementById("nodeTitle1"),
+        document.getElementById("nodeTitle2"),
+        document.getElementById("nodeTitle3"),
+        document.getElementById("nodeTitle4"),
+        document.getElementById("nodeTitle5")
+      ];
+
+      const subs = [
+        document.getElementById("nodeSub1"),
+        document.getElementById("nodeSub2"),
+        document.getElementById("nodeSub3"),
+        document.getElementById("nodeSub4"),
+        document.getElementById("nodeSub5")
+      ];
+
+      const fill = document.getElementById("trackerLineFill");
+
+      nodes.forEach((n, idx) => {
+        if (!n) return;
+        n.className = "tracker-circle future";
+        n.textContent = idx + 1;
+      });
+
+      titles.forEach(t => {
+        if (!t) return;
+        t.className = "tracker-title future";
+      });
+
+      subs.forEach(s => {
+        if (!s) return;
+        s.className = "tracker-subtitle future";
+      });
+
+      if (subs[0]) subs[0].textContent = formatDisplayDateTimeShort(c.submittedAt) || "Submitted";
+      if (subs[1]) subs[1].textContent = c.acceptedAt ? formatDisplayDateTimeShort(c.acceptedAt) : "Pending review";
+      if (subs[2]) subs[2].textContent = c.inProgressAt ? formatDisplayDateTimeShort(c.inProgressAt) : "Scheduled";
+      if (subs[3]) subs[3].textContent = c.verificationRequestedAt ? formatDisplayDateTimeShort(c.verificationRequestedAt) : "Repair evidence";
+      if (subs[4]) subs[4].textContent = c.resolvedAt ? formatDisplayDateTimeShort(c.resolvedAt) : "Resolved";
+
+      fill.style.background = "#15803d";
+
+      function setStage(stageNum, state, customSub) {
+        const idx = stageNum - 1;
+        const n = nodes[idx];
+        const t = titles[idx];
+        const s = subs[idx];
+        if (!n || !t || !s) return;
+
+        if (state === "completed") {
+          n.className = "tracker-circle completed";
+          n.innerHTML = getIconSvg("check", { size: 13 });
+          t.className = "tracker-title completed";
+          s.className = "tracker-subtitle completed";
+        } else if (state === "current") {
+          n.className = "tracker-circle current";
+          n.textContent = String(stageNum);
+          t.className = "tracker-title current";
+          s.className = "tracker-subtitle current";
+        } else if (state === "declined") {
+          n.className = "tracker-circle declined";
+          n.innerHTML = getIconSvg("x", { size: 13 });
+          t.className = "tracker-title declined";
+          s.className = "tracker-subtitle declined";
+        } else {
+          n.className = "tracker-circle future";
+          n.textContent = String(stageNum);
+          t.className = "tracker-title future";
+          s.className = "tracker-subtitle future";
+        }
+
+        if (customSub) {
+          s.textContent = customSub;
+        }
+      }
+
+      if (normStatus === "DECLINED") {
+        setStage(1, "completed", formatDisplayDateTimeShort(c.submittedAt) || "Submitted");
+        setStage(2, "declined", c.declinedAt ? formatDisplayDateTimeShort(c.declinedAt) : "Declined");
+        fill.style.width = "25%";
+        fill.style.background = "#b91c1c";
+        return;
+      }
+
+      if (normStatus === "SUBMITTED") {
+        setStage(1, "current", formatDisplayDateTimeShort(c.submittedAt) || "Submitted");
+        fill.style.width = "0%";
+      } else if (normStatus === "UNDER_REVIEW") {
+        setStage(1, "completed", formatDisplayDateTimeShort(c.submittedAt) || "Submitted");
+        setStage(2, "current", c.acceptedAt ? formatDisplayDateTimeShort(c.acceptedAt) : "Accepted");
+        fill.style.width = "25%";
+      } else if (normStatus === "IN_PROGRESS" || normStatus === "REWORK_REQUIRED") {
+        setStage(1, "completed", formatDisplayDateTimeShort(c.submittedAt) || "Submitted");
+        setStage(2, "completed", c.acceptedAt ? formatDisplayDateTimeShort(c.acceptedAt) : "Accepted");
+        const inProgressLabel = (c.studentFeedback && c.studentFeedback.startsWith("Dispute"))
+          ? "Rework active"
+          : (c.inProgressAt ? formatDisplayDateTimeShort(c.inProgressAt) : "Repair active");
+        setStage(3, "current", inProgressLabel);
+        fill.style.width = "50%";
+      } else if (normStatus === "AWAITING_VERIFICATION" || normStatus.includes("VERIFICATION")) {
+        setStage(1, "completed", formatDisplayDateTimeShort(c.submittedAt) || "Submitted");
+        setStage(2, "completed", c.acceptedAt ? formatDisplayDateTimeShort(c.acceptedAt) : "Accepted");
+        setStage(3, "completed", c.inProgressAt ? formatDisplayDateTimeShort(c.inProgressAt) : "Repaired");
+        setStage(4, "current", c.verificationRequestedAt ? formatDisplayDateTimeShort(c.verificationRequestedAt) : "Submitted proof");
+        fill.style.width = "75%";
+      } else if (normStatus === "CLOSED" || normStatus === "RESOLVED") {
+        setStage(1, "completed", formatDisplayDateTimeShort(c.submittedAt) || "Submitted");
+        setStage(2, "completed", c.acceptedAt ? formatDisplayDateTimeShort(c.acceptedAt) : "Accepted");
+        setStage(3, "completed", c.inProgressAt ? formatDisplayDateTimeShort(c.inProgressAt) : "Repaired");
+        setStage(4, "completed", c.verificationRequestedAt ? formatDisplayDateTimeShort(c.verificationRequestedAt) : "Verified");
+        setStage(5, "completed", c.resolvedAt ? formatDisplayDateTimeShort(c.resolvedAt) : "Closed");
+        fill.style.width = "100%";
+      }
+    }
+
+    async function confirmResolution() {
+      if (!currentViewingTicketId) return;
+      try {
+        await apiClient.verifyResolution(currentViewingTicketId, "Confirmed by student");
+        showToast(`Ticket ${currentViewingTicketId} marked resolved and closed!`, "success");
+        closeModal("ticketDetailsModal");
+        await loadMyComplaints();
+      } catch (err) {
+        showToast(`Verification failed: ${err.message}`, "danger");
+      }
+    }
+
+    async function disputeRepair() {
+      if (!currentViewingTicketId) return;
+      const reason = prompt("Please provide the reason why this issue is not fully resolved:");
+      if (!reason || !reason.trim()) return;
+
+      try {
+        await apiClient.disputeResolution(currentViewingTicketId, reason.trim());
+        showToast("Rework requested. The ticket has returned to In Progress.", "info");
+        closeModal("ticketDetailsModal");
+        await loadMyComplaints();
+      } catch (err) {
+        showToast(`Dispute failed: ${err.message}`, "danger");
+      }
+    }
+  </script>
+</body>
+</html>

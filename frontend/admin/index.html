@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="en" data-portal="admin">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Executive Operations Console &bull; Smart Campus Maintenance</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/dashboard.css">
+  <style>
+    /* Admin view switching */
+    .admin-view-section {
+      display: none;
+    }
+    .admin-view-section.active {
+      display: block;
+    }
+
+    /* Topbar adjustments for Admin Royal Blue theme */
+    .topbar {
+      background: #014BAA;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      color: #F8F3F0;
+    }
+    .topbar .topbar-brand {
+      color: #ffffff;
+    }
+    .topbar .nav-link {
+      color: #F8F3F0;
+    }
+    .topbar .nav-link:hover {
+      color: #ffffff;
+    }
+
+    /* Admin Page Header */
+    .admin-header-strip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .admin-header-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .admin-header-subtitle {
+      font-size: 0.825rem;
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+
+    /* Ticket ID tag */
+    .ticket-id-tag {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 0.825rem;
+      color: var(--portal-accent);
+      background: var(--portal-accent-soft);
+      padding: 3px 7px;
+      border-radius: var(--radius-xs);
+      border: 1px solid var(--portal-accent-border);
+      letter-spacing: -0.01em;
+    }
+
+    /* Emergency tag */
+    .badge-emergency-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #b91c1c;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: var(--radius-xs);
+      letter-spacing: 0.04em;
+    }
+
+    /* Action icon button */
+    .btn-action-view {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      color: var(--color-text);
+      background: var(--color-surface);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: var(--transition-fast);
+      text-decoration: none;
+    }
+    .btn-action-view:hover {
+      background: var(--portal-surface-muted);
+      border-color: var(--portal-accent);
+      color: var(--portal-accent);
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Topbar Navigation (Royal Blue header) -->
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="topbar-left">
+        <button 
+          type="button" 
+          class="sidebar-toggle-btn" 
+          id="sidebarNavbarToggle" 
+          aria-label="Toggle navigation sidebar" 
+          title="Toggle navigation sidebar"
+        >
+          <i data-icon="menu"></i>
+        </button>
+        <a href="index.html" class="topbar-brand">
+          <i data-icon="shield"></i>
+          <span>Smart Campus</span>
+        </a>
+      </div>
+
+      <nav class="topbar-actions" aria-label="Account actions">
+        <span class="topbar-admin-name">
+          <i data-icon="user-check"></i>
+          <span id="currentAdminName">Administrator</span>
+        </span>
+        <button 
+          type="button" 
+          class="topbar-logout-btn" 
+          onclick="authManager.logout('../login.html');" 
+          title="Sign out of Admin Portal"
+        >
+          <i data-icon="log-out"></i>
+          <span>Logout</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Admin Main Layout with Collapsible Sidebar -->
+  <div class="admin-layout-wrapper">
+
+    <!-- Mobile Backdrop for Sidebar -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar(false)"></div>
+
+    <!-- Collapsible Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar" aria-label="Administrative Navigation">
+      <div class="sidebar-header">
+        <span class="sidebar-title">Operations</span>
+        <button 
+          type="button" 
+          class="sidebar-toggle-btn" 
+          id="sidebarToggleBtn" 
+          onclick="toggleSidebar()" 
+          aria-label="Collapse navigation sidebar" 
+          title="Collapse or expand sidebar"
+        >
+          <i data-icon="chevron-left"></i>
+        </button>
+      </div>
+      <ul class="sidebar-nav">
+        <!-- 1. Dashboard -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#dashboard" 
+            class="sidebar-link active" 
+            id="navLinkDashboard" 
+            data-view="DASHBOARD"
+            data-tooltip="Dashboard" 
+            onclick="switchAdminView('DASHBOARD'); return false;"
+          >
+            <i data-icon="layout-dashboard" class="sidebar-icon"></i>
+            <span class="sidebar-text">Dashboard</span>
+          </a>
+        </li>
+        <!-- 2. Submitted -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#submitted" 
+            class="sidebar-link" 
+            id="navLinkSubmitted" 
+            data-view="SUBMITTED"
+            data-tooltip="Submitted" 
+            onclick="switchAdminView('SUBMITTED'); return false;"
+          >
+            <i data-icon="inbox" class="sidebar-icon"></i>
+            <span class="sidebar-text">Submitted</span>
+          </a>
+        </li>
+        <!-- 3. Under Review -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#under_review" 
+            class="sidebar-link" 
+            id="navLinkUnderReview" 
+            data-view="UNDER_REVIEW"
+            data-tooltip="Under Review" 
+            onclick="switchAdminView('UNDER_REVIEW'); return false;"
+          >
+            <i data-icon="clock" class="sidebar-icon"></i>
+            <span class="sidebar-text">Under Review</span>
+          </a>
+        </li>
+        <!-- 4. In Progress -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#in_progress" 
+            class="sidebar-link" 
+            id="navLinkInProgress" 
+            data-view="IN_PROGRESS"
+            data-tooltip="In Progress" 
+            onclick="switchAdminView('IN_PROGRESS'); return false;"
+          >
+            <i data-icon="wrench" class="sidebar-icon"></i>
+            <span class="sidebar-text">In Progress</span>
+          </a>
+        </li>
+        <!-- 5. Student Verification -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#student_verification" 
+            class="sidebar-link" 
+            id="navLinkVerification" 
+            data-view="AWAITING_VERIFICATION"
+            data-tooltip="Student Verification" 
+            onclick="switchAdminView('AWAITING_VERIFICATION'); return false;"
+          >
+            <i data-icon="check-circle-2" class="sidebar-icon"></i>
+            <span class="sidebar-text">Student Verification</span>
+          </a>
+        </li>
+        <!-- 6. Resolve/Closed -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#resolved_closed" 
+            class="sidebar-link" 
+            id="navLinkResolvedClosed" 
+            data-view="RESOLVED_CLOSED"
+            data-tooltip="Resolve/Closed" 
+            onclick="switchAdminView('RESOLVED_CLOSED'); return false;"
+          >
+            <i data-icon="check" class="sidebar-icon"></i>
+            <span class="sidebar-text">Resolve/Closed</span>
+          </a>
+        </li>
+        <!-- 7. Declined -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#declined" 
+            class="sidebar-link" 
+            id="navLinkDeclined" 
+            data-view="DECLINED"
+            data-tooltip="Declined" 
+            onclick="switchAdminView('DECLINED'); return false;"
+          >
+            <i data-icon="x-circle" class="sidebar-icon"></i>
+            <span class="sidebar-text">Declined</span>
+          </a>
+        </li>
+
+        <li class="sidebar-nav-divider" style="margin: 0.5rem 0.75rem; border-top: 1px solid rgba(255,255,255,0.12);"></li>
+
+        <!-- Account Management -->
+        <li class="sidebar-nav-item">
+          <a 
+            href="#accounts" 
+            class="sidebar-link" 
+            id="navLinkAccounts" 
+            data-view="ACCOUNTS"
+            data-tooltip="Account Management" 
+            onclick="switchAdminView('ACCOUNTS'); return false;"
+          >
+            <i data-icon="users" class="sidebar-icon"></i>
+            <span class="sidebar-text">Account Management</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="admin-main-wrap">
+
+      <!-- ===============================================================
+           VIEW 1: COMPLAINTS DASHBOARD
+           =============================================================== -->
+      <div class="admin-view-section active" id="viewComplaints">
+        
+        <!-- Header Strip: Centered Overview Heading -->
+        <div class="admin-header-strip admin-header-overview">
+          <div class="admin-overview-center">
+            <h1 class="admin-header-title" id="adminHeaderTitle">
+              <i data-icon="bar-chart-3"></i>
+              <span>Campus Infrastructure Overview</span>
+            </h1>
+          </div>
+          <div class="admin-overview-actions">
+            <button type="button" class="btn btn-sm btn-outline" onclick="loadAdminComplaintsData()" title="Reload complaints from database">
+              <i data-icon="refresh-cw"></i>
+              <span>Refresh</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Six Interactive Complaint-Status Metric Panels -->
+        <div class="metrics-grid-admin-6" id="adminStatusCardsGrid" role="region" aria-label="Complaint Status Counters">
+          
+          <!-- 1. Submitted -->
+          <div 
+            class="metric-card" 
+            id="cardSubmitted" 
+            data-status-filter="SUBMITTED" 
+            role="button" 
+            tabindex="0" 
+            title="Click to view complaints awaiting initial review"
+          >
+            <div class="metric-card-top">
+              <div class="metric-info">
+                <h4>Submitted</h4>
+              </div>
+              <div class="metric-icon-small" data-icon="inbox" data-icon-size="14" style="background: #eff6ff; color: #2563eb;"></div>
+            </div>
+            <div class="metric-value" id="metricSubmitted">0</div>
+          </div>
+
+          <!-- 2. Under Review -->
+          <div 
+            class="metric-card" 
+            id="cardReview" 
+            data-status-filter="UNDER_REVIEW" 
+            role="button" 
+            tabindex="0" 
+            title="Click to view complaints currently under department review"
+          >
+            <div class="metric-card-top">
+              <div class="metric-info">
+                <h4>Under Review</h4>
+              </div>
+              <div class="metric-icon-small" data-icon="clock" data-icon-size="14" style="background: #f5f3ff; color: #7c3aed;"></div>
+            </div>
+            <div class="metric-value" id="metricReview">0</div>
+          </div>
+
+          <!-- 3. In Progress -->
+          <div 
+            class="metric-card" 
+            id="cardProgress" 
+            data-status-filter="IN_PROGRESS" 
+            role="button" 
+            tabindex="0" 
+            title="Click to view active in-progress complaints"
+          >
+            <div class="metric-card-top">
+              <div class="metric-info">
+                <h4>In Progress</h4>
+              </div>
+              <div class="metric-icon-small" data-icon="wrench" data-icon-size="14" style="background: #fff7ed; color: #ea580c;"></div>
+            </div>
+            <div class="metric-value" id="metricProgress">0</div>
+          </div>
+
+          <!-- 4. Student Verification -->
+          <div 
+            class="metric-card" 
+            id="cardVerification" 
+            data-status-filter="AWAITING_VERIFICATION" 
+            role="button" 
+            tabindex="0" 
+            title="Click to view complaints awaiting student confirmation"
+          >
+            <div class="metric-card-top">
+              <div class="metric-info">
+                <h4>Verification</h4>
+              </div>
+              <div class="metric-icon-small" data-icon="check-circle-2" data-icon-size="14" style="background: #fefce8; color: #ca8a04;"></div>
+            </div>
+            <div class="metric-value" id="metricVerification">0</div>
+          </div>
+
+          <!-- 5. Resolved / Closed -->
+          <div 
+            class="metric-card" 
+            id="cardResolved" 
+            data-status-filter="RESOLVED_CLOSED" 
+            role="button" 
+            tabindex="0" 
+            title="Click to view resolved and closed complaints"
+          >
+            <div class="metric-card-top">
+              <div class="metric-info">
+                <h4>Resolved / Closed</h4>
+              </div>
+              <div class="metric-icon-small" data-icon="check" data-icon-size="14" style="background: #f0fdf4; color: #16a34a;"></div>
+            </div>
+            <div class="metric-value" id="metricResolved">0</div>
+          </div>
+
+          <!-- 6. Declined -->
+          <div 
+            class="metric-card" 
+            id="cardDeclined" 
+            data-status-filter="DECLINED" 
+            role="button" 
+            tabindex="0" 
+            title="Click to view declined complaints"
+          >
+            <div class="metric-card-top">
+              <div class="metric-info">
+                <h4>Declined</h4>
+              </div>
+              <div class="metric-icon-small" data-icon="x-circle" data-icon-size="14" style="background: #fef2f2; color: #dc2626;"></div>
+            </div>
+            <div class="metric-value" id="metricDeclined">0</div>
+          </div>
+
+        </div>
+
+        <!-- Complaints Table Card -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 id="complaintsTableHeading">Recent Campus Complaints</h3>
+            </div>
+            <div>
+              <span id="complaintsTableCount">
+                Showing 0 complaints
+              </span>
+            </div>
+          </div>
+
+          <!-- Toolbar Search & Department Filters (Shared on all complaint pages) -->
+          <div class="toolbar">
+            <div class="toolbar-filters">
+              <input 
+                type="search" 
+                id="complaintsSearchFilter" 
+                class="form-control" 
+                placeholder="Search ticket ID, location, issue, reporter..."
+                aria-label="Search complaints"
+              >
+              <select id="complaintsDeptFilter" class="form-select" aria-label="Filter by department">
+                <option value="ALL">All Departments</option>
+                <option value="ELECTRICAL">Electrical</option>
+                <option value="PLUMBING">Plumbing</option>
+                <option value="CLEANING">Cleaning</option>
+                <option value="IT_SUPPORT">IT &amp; Technical Support</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Loading State -->
+          <div id="complaintsLoadingState" style="text-align: center; padding: 3rem 1rem; color: var(--color-text-muted); display: none;">
+            <div style="font-size: 1.5rem; margin-bottom: 8px;">
+              <i data-icon="refresh-cw"></i>
+            </div>
+            <p style="margin: 0; font-weight: 500;">Loading campus complaints from database...</p>
+          </div>
+
+          <!-- Error State -->
+          <div id="complaintsErrorState" class="empty-state" style="display: none; padding: 2rem 1rem;">
+            <div class="empty-state-icon" style="color: var(--color-danger);">
+              <i data-icon="alert-triangle"></i>
+            </div>
+            <h3>Unable to Load Complaints</h3>
+            <p id="complaintsErrorMsg">Failed to connect to the backend server. Please check your network and try again.</p>
+            <div style="margin-top: 12px;">
+              <button type="button" class="btn btn-primary btn-sm" onclick="loadAdminComplaintsData()">
+                <i data-icon="refresh-cw"></i> Retry Request
+              </button>
+            </div>
+          </div>
+
+          <!-- Complaints Table -->
+          <div class="table-responsive" id="complaintsTableContainer">
+            <table class="table admin-complaints-table">
+              <thead>
+                <tr>
+                  <th class="col-ticket">Ticket ID</th>
+                  <th class="col-dept">Department</th>
+                  <th class="col-loc">Location</th>
+                  <th class="col-summary">Summary</th>
+                  <th class="col-status">Status</th>
+                  <th class="col-reporter">Reporter</th>
+                  <th class="col-logged">Logged At</th>
+                  <th class="col-action">Action</th>
+                </tr>
+              </thead>
+              <tbody id="complaintsTableBody">
+                <tr>
+                  <td colspan="8" style="text-align: center; color: var(--color-text-muted); padding: 2rem;">
+                    Loading campus records from database...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Empty State -->
+          <div id="complaintsEmptyState" class="empty-state" style="display: none;">
+            <div class="empty-state-icon" id="complaintsEmptyIcon">
+              <i data-icon="clipboard-list"></i>
+            </div>
+            <h3 id="complaintsEmptyTitle">No Complaints Found</h3>
+            <p id="complaintsEmptyDesc">There are currently no complaints matching your selected criteria.</p>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ===============================================================
+           VIEW 2: ACCOUNT MANAGEMENT
+           =============================================================== -->
+      <div class="admin-view-section" id="viewAccounts">
+
+        <div class="admin-header-strip">
+          <div>
+            <h1 class="admin-header-title">
+              <i data-icon="users"></i>
+              <span>Account Management</span>
+            </h1>
+            <p class="admin-header-subtitle">
+              Provision and manage student, department technician, and administrative user credentials.
+            </p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button 
+              type="button" 
+              class="btn btn-primary btn-sm" 
+              id="btnToggleCreateAccount" 
+              onclick="toggleCreateAccountForm()"
+            >
+              <i data-icon="plus"></i>
+              <span>Create Account</span>
+            </button>
+            <button type="button" class="btn btn-sm btn-outline" onclick="loadAdminAccountsData()" title="Reload user accounts">
+              <i data-icon="refresh"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Create Account Collapsible Panel / Form (Hidden by default until Create Account is clicked) -->
+        <div class="create-account-card" id="createAccountCard" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <h3 style="margin: 0; font-size: 1.1rem; color: var(--color-text); display: flex; align-items: center; gap: 8px;">
+              <i data-icon="user-plus"></i> Add New User Account
+            </h3>
+            <button 
+              type="button" 
+              class="btn btn-sm btn-outline" 
+              onclick="toggleCreateAccountForm(false)" 
+              style="padding: 4px 10px; font-size: 0.8rem;"
+            >
+              Cancel
+            </button>
+          </div>
+
+          <!-- Create Account Form Feedback -->
+          <div id="createAccountFeedback" style="display: none; margin-bottom: 1rem; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.875rem;"></div>
+
+          <form id="createAccountForm" onsubmit="handleCreateAccount(event)">
+            <div class="form-grid-3">
+              <div class="form-group">
+                <label for="newUserRole" class="form-label">Role <span style="color: var(--color-danger);">*</span></label>
+                <select id="newUserRole" class="form-select" required onchange="handleRoleSelectionChange()">
+                  <option value="">-- Select Role --</option>
+                  <option value="STUDENT">Student</option>
+                  <option value="ELECTRICAL">Electrical Department</option>
+                  <option value="PLUMBING">Plumbing Department</option>
+                  <option value="CLEANING">Cleaning Department</option>
+                  <option value="IT_SUPPORT">IT &amp; Technical Support</option>
+                  <option value="ADMIN">Campus Administrator</option>
+                </select>
+              </div>
+
+              <div class="form-group" id="deptFormGroup">
+                <label for="newUserDept" class="form-label">Department</label>
+                <select id="newUserDept" class="form-select">
+                  <option value="">None / Not Applicable</option>
+                  <option value="ELECTRICAL">Electrical</option>
+                  <option value="PLUMBING">Plumbing</option>
+                  <option value="CLEANING">Cleaning</option>
+                  <option value="IT_SUPPORT">IT &amp; Technical Support</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="newUserEmail" class="form-label">Email / Identifier <span style="color: var(--color-danger);">*</span></label>
+                <input 
+                  type="email" 
+                  id="newUserEmail" 
+                  class="form-control" 
+                  placeholder="e.g. staff@smartcampus.edu" 
+                  required 
+                  maxlength="120"
+                >
+              </div>
+            </div>
+
+            <div class="form-grid-3">
+              <div class="form-group">
+                <label for="newUserFullName" class="form-label">Display Name / Full Name <span style="color: var(--color-danger);">*</span></label>
+                <input 
+                  type="text" 
+                  id="newUserFullName" 
+                  class="form-control" 
+                  placeholder="e.g. Alex Morgan" 
+                  required 
+                  maxlength="100"
+                >
+              </div>
+
+              <div class="form-group">
+                <label for="newUserPhone" class="form-label">Phone Number (Optional)</label>
+                <input 
+                  type="tel" 
+                  id="newUserPhone" 
+                  class="form-control" 
+                  placeholder="e.g. 9876543210" 
+                  maxlength="20"
+                >
+              </div>
+
+              <div class="form-group">
+                <label for="newUserPassword" class="form-label">Initial Password <span style="color: var(--color-danger);">*</span></label>
+                <div class="password-input-group">
+                  <input 
+                    type="password" 
+                    id="newUserPassword" 
+                    class="form-control" 
+                    placeholder="Min. 6 characters" 
+                    required 
+                    minlength="6"
+                  >
+                  <button 
+                    type="button" 
+                    class="password-toggle-btn" 
+                    id="btnToggleNewPassword" 
+                    onclick="togglePasswordVisibility('newUserPassword', this)" 
+                    title="Toggle password visibility"
+                    aria-label="Toggle password visibility"
+                  >
+                    <i data-icon="eye"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 0.5rem;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="toggleCreateAccountForm(false)">
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary btn-sm" id="btnSubmitCreateAccount">
+                Create Account
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Accounts List Table Card -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 id="accountsTableHeading">Registered Campus Accounts</h3>
+            </div>
+            <div>
+              <span id="accountsTableCount">
+                Showing 0 accounts
+              </span>
+            </div>
+          </div>
+
+          <!-- Accounts Toolbar Filters -->
+          <div class="toolbar">
+            <div class="toolbar-filters">
+              <input 
+                type="search" 
+                id="accountsSearchFilter" 
+                class="form-control" 
+                placeholder="Search username, display name, email..."
+                aria-label="Search accounts"
+              >
+              <select id="accountsRoleFilter" class="form-select" aria-label="Filter by role">
+                <option value="ALL">All Roles</option>
+                <option value="STUDENT">Student</option>
+                <option value="ELECTRICAL">Electrical Department</option>
+                <option value="PLUMBING">Plumbing Department</option>
+                <option value="CLEANING">Cleaning Department</option>
+                <option value="IT_SUPPORT">IT &amp; Technical Support</option>
+                <option value="ADMIN">Campus Administrator</option>
+              </select>
+              <select id="accountsDeptFilter" class="form-select" aria-label="Filter by department">
+                <option value="ALL">All Departments</option>
+                <option value="ELECTRICAL">Electrical</option>
+                <option value="PLUMBING">Plumbing</option>
+                <option value="CLEANING">Cleaning</option>
+                <option value="IT_SUPPORT">IT &amp; Tech Support</option>
+              </select>
+              <select id="accountsStatusFilter" class="form-select" aria-label="Filter by status">
+                <option value="ALL">All Statuses</option>
+                <option value="ACTIVE">Active</option>
+                <option value="DEACTIVATED">Deactivated</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Loading State -->
+          <div id="accountsLoadingState" style="text-align: center; padding: 3rem 1rem; color: var(--color-text-muted); display: none;">
+            <div style="font-size: 1.5rem; margin-bottom: 8px;">
+              <i data-icon="refresh"></i>
+            </div>
+            <p style="margin: 0; font-weight: 500;">Loading user accounts from database...</p>
+          </div>
+
+          <!-- Error State -->
+          <div id="accountsErrorState" class="empty-state" style="display: none; padding: 2rem 1rem;">
+            <div class="empty-state-icon" style="color: var(--color-danger);">
+              <i data-icon="alert-triangle"></i>
+            </div>
+            <h3>Unable to Load Accounts</h3>
+            <p id="accountsErrorMsg">Failed to connect to the backend server.</p>
+            <div style="margin-top: 12px;">
+              <button type="button" class="btn btn-primary btn-sm" onclick="loadAdminAccountsData()">
+                <i data-icon="refresh"></i> Retry Request
+              </button>
+            </div>
+          </div>
+
+          <!-- Accounts Table -->
+          <div class="table-responsive" id="accountsTableContainer">
+            <table class="table admin-accounts-table">
+              <thead>
+                <tr>
+                  <th class="col-acc-user">Username / Identifier</th>
+                  <th class="col-acc-name">Display Name</th>
+                  <th class="col-acc-email">Email</th>
+                  <th class="col-acc-role">Role</th>
+                  <th class="col-acc-dept">Department</th>
+                  <th class="col-acc-status">Account Status</th>
+                  <th class="col-acc-date">Created Date</th>
+                  <th class="col-acc-action">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="accountsTableBody">
+                <tr>
+                  <td colspan="8" style="text-align: center; color: var(--color-text-muted); padding: 2rem;">
+                    Loading user accounts from database...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Empty State -->
+          <div id="accountsEmptyState" class="empty-state" style="display: none;">
+            <div class="empty-state-icon">
+              <i data-icon="users"></i>
+            </div>
+            <h3>No Accounts Found</h3>
+            <p id="accountsEmptyDesc">No user accounts match your search or filter criteria.</p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Modal: Structured Ticket Details (Inspection) -->
+  <div class="modal-overlay" id="ticketDetailsModal">
+    <div class="ticket-modal-card" style="max-width: 760px;">
+      
+      <!-- Top Pinned Header -->
+      <div class="ticket-header-pinned">
+        <div class="ticket-header-top">
+          <span class="ticket-subtle-badge">ADMIN TICKET INSPECTION</span>
+          <button type="button" class="ticket-close-icon" onclick="closeModal('ticketDetailsModal')" aria-label="Close details">
+            <i data-icon="x"></i>
+          </button>
+        </div>
+        <h2 class="structured-ticket-title" id="adminDetailIssueTitle">Complaint Details</h2>
+      </div>
+
+      <!-- Ticket Scrollable Body Content -->
+      <div class="ticket-body-scrollable">
+        <div id="adminDetailStructuredMeta"></div>
+
+        <!-- Progress Tracker -->
+        <div class="problem-desc-title" style="margin-top: 18px; margin-bottom: 10px;">RESOLUTION LIFECYCLE</div>
+        <div class="tracker-container">
+          <div class="tracker-line">
+            <div class="tracker-line-fill" id="adminTrackerLineFill" style="width: 0%;"></div>
+          </div>
+
+          <div class="tracker-node-wrapper">
+            <div class="tracker-circle" id="adminNode1">1</div>
+            <div class="tracker-title">Submitted</div>
+            <div class="tracker-subtitle" id="adminNodeSub1">—</div>
+          </div>
+
+          <div class="tracker-node-wrapper">
+            <div class="tracker-circle" id="adminNode2">2</div>
+            <div class="tracker-title">Under Review</div>
+            <div class="tracker-subtitle" id="adminNodeSub2">Pending review</div>
+          </div>
+
+          <div class="tracker-node-wrapper">
+            <div class="tracker-circle" id="adminNode3">3</div>
+            <div class="tracker-title">In Progress</div>
+            <div class="tracker-subtitle" id="adminNodeSub3">Scheduled</div>
+          </div>
+
+          <div class="tracker-node-wrapper">
+            <div class="tracker-circle" id="adminNode4">4</div>
+            <div class="tracker-title">Verification</div>
+            <div class="tracker-subtitle" id="adminNodeSub4">Repair evidence</div>
+          </div>
+
+          <div class="tracker-node-wrapper">
+            <div class="tracker-circle" id="adminNode5">5</div>
+            <div class="tracker-title">Closed</div>
+            <div class="tracker-subtitle" id="adminNodeSub5">Resolved</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pinned Footer Action -->
+      <div class="ticket-footer-pinned">
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeModal('ticketDetailsModal')">
+          Close Inspection
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal: Deactivation Confirmation -->
+  <div class="modal-overlay" id="deactivateConfirmModal">
+    <div class="modal-card" style="max-width: 480px; padding: 1.5rem;">
+      <div style="text-align: center; margin-bottom: 1rem;">
+        <div style="color: var(--color-danger); display: flex; justify-content: center; margin-bottom: 0.5rem;">
+          <i data-icon="alert-triangle" style="width: 38px; height: 38px;"></i>
+        </div>
+        <h3 style="margin: 0; color: #b91c1c;">Confirm Account Deactivation</h3>
+      </div>
+      <p style="font-size: 0.95rem; color: #374151; line-height: 1.5; margin-bottom: 1rem;" id="deactivateConfirmMsg">
+        Are you sure you want to deactivate this account?
+      </p>
+      <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 1.5rem; font-size: 0.85rem; color: #991b1b;">
+        <strong>Security Notice:</strong> The user will immediately be prevented from signing in or calling APIs. All historical tickets, audit records, and ownership are safely preserved.
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeModal('deactivateConfirmModal')">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-sm btn-danger" id="btnConfirmDeactivate">
+          Yes, Deactivate Account
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <p>Smart Campus Infrastructure Problem Reporter &bull; Administration Console</p>
+    </div>
+  </footer>
+
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script>
+    // Global Application State
+    let currentUser = null;
+    let campusComplaints = [];
+    let campusUsers = [];
+    let activeAdminView = "DASHBOARD";
+    let pendingDeactivateUserId = null;
+
+    // View configurations matching the 7 navigation items + Accounts
+    const VIEW_CONFIG = {
+      DASHBOARD: {
+        title: "Campus Infrastructure Overview",
+        icon: "bar-chart-3",
+        tableHeading: "Recent Campus Complaints",
+        hash: "dashboard",
+        isStatusPage: false,
+        statusFilter: null
+      },
+      SUBMITTED: {
+        title: "Submitted Complaints",
+        icon: "inbox",
+        tableHeading: "Submitted Complaints",
+        hash: "submitted",
+        isStatusPage: true,
+        statusFilter: "SUBMITTED"
+      },
+      UNDER_REVIEW: {
+        title: "Under Review Complaints",
+        icon: "clock",
+        tableHeading: "Under Review Complaints",
+        hash: "under_review",
+        isStatusPage: true,
+        statusFilter: "UNDER_REVIEW"
+      },
+      IN_PROGRESS: {
+        title: "In Progress Complaints",
+        icon: "wrench",
+        tableHeading: "In Progress Complaints",
+        hash: "in_progress",
+        isStatusPage: true,
+        statusFilter: "IN_PROGRESS"
+      },
+      AWAITING_VERIFICATION: {
+        title: "Student Verification Complaints",
+        icon: "check-circle-2",
+        tableHeading: "Student Verification Complaints",
+        hash: "student_verification",
+        isStatusPage: true,
+        statusFilter: "AWAITING_VERIFICATION"
+      },
+      RESOLVED_CLOSED: {
+        title: "Resolve / Closed Complaints",
+        icon: "check",
+        tableHeading: "Resolved & Closed Complaints",
+        hash: "resolved_closed",
+        isStatusPage: true,
+        statusFilter: "RESOLVED_CLOSED"
+      },
+      DECLINED: {
+        title: "Declined Complaints",
+        icon: "x-circle",
+        tableHeading: "Declined Complaints",
+        hash: "declined",
+        isStatusPage: true,
+        statusFilter: "DECLINED"
+      },
+      ACCOUNTS: {
+        title: "Account Management",
+        icon: "users",
+        tableHeading: "User Accounts",
+        hash: "accounts",
+        isStatusPage: false,
+        statusFilter: null
+      }
+    };
+
+    function parseHashToView(rawHash) {
+      const clean = (rawHash || "").replace(/^#/, "").trim().toLowerCase();
+      if (!clean || clean === "dashboard" || clean === "complaints") return "DASHBOARD";
+      if (clean === "submitted") return "SUBMITTED";
+      if (clean === "under_review" || clean === "under-review" || clean === "review") return "UNDER_REVIEW";
+      if (clean === "in_progress" || clean === "in-progress" || clean === "progress") return "IN_PROGRESS";
+      if (clean === "student_verification" || clean === "student-verification" || clean === "verification" || clean === "awaiting_verification") return "AWAITING_VERIFICATION";
+      if (clean === "resolved_closed" || clean === "resolved-closed" || clean === "resolved" || clean === "closed") return "RESOLVED_CLOSED";
+      if (clean === "declined") return "DECLINED";
+      if (clean === "accounts" || clean === "account") return "ACCOUNTS";
+      return "DASHBOARD";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // 1. Guard route: Only ADMIN role allowed
+      currentUser = authManager.requireAuth(["ADMIN"], "../");
+      if (!currentUser) return;
+
+      const nameEl = document.getElementById("currentAdminName");
+      if (nameEl && currentUser.fullName) {
+        nameEl.textContent = currentUser.fullName;
+      }
+
+      // 2. Setup sidebar listeners
+      initSidebar();
+
+      // 3. Setup status cards listeners
+      initStatusCards();
+
+      // 4. Setup search and filter listeners
+      initSearchAndFilters();
+
+      // 5. Initial deep link / hash check
+      applyHash();
+      window.addEventListener("hashchange", applyHash);
+
+      // 6. Load initial data
+      loadAdminComplaintsData();
+      renderAllIcons();
+    });
+
+    /**
+     * Hash navigation handler
+     */
+    function applyHash() {
+      const targetView = parseHashToView(window.location.hash);
+      switchAdminView(targetView, false);
+    }
+
+    /**
+     * Sidebar expand/collapse logic
+     */
+    function initSidebar() {
+      const toggleBtn = document.getElementById("sidebarToggleBtn");
+      const navToggleBtn = document.getElementById("sidebarNavbarToggle");
+
+      if (navToggleBtn) {
+        navToggleBtn.addEventListener("click", () => {
+          const sidebar = document.getElementById("adminSidebar");
+          const backdrop = document.getElementById("sidebarBackdrop");
+          if (window.innerWidth <= 860) {
+            const isOpen = sidebar.classList.contains("open");
+            sidebar.classList.toggle("open", !isOpen);
+            if (backdrop) backdrop.classList.toggle("active", !isOpen);
+          } else {
+            toggleSidebar();
+          }
+        });
+      }
+    }
+
+    function toggleSidebar(forceState) {
+      const sidebar = document.getElementById("adminSidebar");
+      const toggleBtn = document.getElementById("sidebarToggleBtn");
+      const backdrop = document.getElementById("sidebarBackdrop");
+
+      if (window.innerWidth <= 860) {
+        const nextState = (typeof forceState === "boolean") ? forceState : !sidebar.classList.contains("open");
+        sidebar.classList.toggle("open", nextState);
+        if (backdrop) backdrop.classList.toggle("active", nextState);
+        return;
+      }
+
+      const isCollapsed = sidebar.classList.contains("collapsed");
+      const nextCollapsed = (typeof forceState === "boolean") ? !forceState : !isCollapsed;
+
+      sidebar.classList.toggle("collapsed", nextCollapsed);
+      if (toggleBtn) {
+        toggleBtn.innerHTML = nextCollapsed ? getIconSvg("chevron-right") : getIconSvg("chevron-left");
+        toggleBtn.title = nextCollapsed ? "Expand sidebar" : "Collapse sidebar";
+        toggleBtn.setAttribute("aria-label", toggleBtn.title);
+      }
+    }
+
+    /**
+     * Switch between Dashboard, individual status views, or Account Management
+     */
+    function switchAdminView(viewKey, updateHash = true) {
+      const normalizedView = parseHashToView(viewKey);
+      activeAdminView = normalizedView;
+
+      const complaintsView = document.getElementById("viewComplaints");
+      const accountsView = document.getElementById("viewAccounts");
+      const statusCardsGrid = document.getElementById("adminStatusCardsGrid");
+      const headerTitle = document.getElementById("adminHeaderTitle");
+      const tableHeading = document.getElementById("complaintsTableHeading");
+
+      const cfg = VIEW_CONFIG[normalizedView] || VIEW_CONFIG.DASHBOARD;
+
+      if (normalizedView === "ACCOUNTS") {
+        complaintsView.classList.remove("active");
+        accountsView.classList.add("active");
+        if (updateHash) window.location.hash = "accounts";
+        toggleCreateAccountForm(false);
+        loadAdminAccountsData();
+      } else {
+        accountsView.classList.remove("active");
+        complaintsView.classList.add("active");
+        if (updateHash) window.location.hash = cfg.hash;
+
+        // Dashboard vs Status Page UI presentation
+        if (normalizedView === "DASHBOARD") {
+          // Show 6 summary cards on Dashboard only
+          if (statusCardsGrid) statusCardsGrid.style.display = "";
+          if (headerTitle) {
+            headerTitle.innerHTML = `<i data-icon="bar-chart-3"></i><span>Campus Infrastructure Overview</span>`;
+          }
+          if (tableHeading) {
+            tableHeading.textContent = "Recent Campus Complaints";
+          }
+        } else {
+          // Status-specific page: hide summary cards
+          if (statusCardsGrid) statusCardsGrid.style.display = "none";
+          if (headerTitle) {
+            headerTitle.innerHTML = `<i data-icon="${cfg.icon}"></i><span>${cfg.title}</span>`;
+          }
+          if (tableHeading) {
+            tableHeading.textContent = cfg.tableHeading;
+          }
+        }
+
+        filterAndRenderComplaints();
+      }
+
+      // Update active highlight on sidebar items
+      document.querySelectorAll(".admin-sidebar .sidebar-link").forEach(link => {
+        const itemKey = link.getAttribute("data-view");
+        const isActive = (itemKey === normalizedView);
+        link.classList.toggle("active", isActive);
+      });
+
+      // On mobile, auto-close sidebar when an item is selected
+      if (window.innerWidth <= 860) {
+        toggleSidebar(false);
+      }
+
+      renderAllIcons();
+    }
+
+    /**
+     * Initialize six status cards click and keyboard accessibility
+     * Clicking any card redirects to the corresponding sidebar page!
+     */
+    function initStatusCards() {
+      const cards = document.querySelectorAll(".metrics-grid-admin-6 .metric-card");
+      cards.forEach(card => {
+        card.addEventListener("click", () => {
+          const filter = card.getAttribute("data-status-filter");
+          if (filter) {
+            switchAdminView(filter);
+          }
+        });
+
+        card.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            card.click();
+          }
+        });
+      });
+    }
+
+    /**
+     * Search and Department Filter Listeners
+     */
+    function initSearchAndFilters() {
+      // Complaints filters: Search & Department
+      const compSearch = document.getElementById("complaintsSearchFilter");
+      const compDept = document.getElementById("complaintsDeptFilter");
+      if (compSearch) compSearch.addEventListener("input", filterAndRenderComplaints);
+      if (compDept) compDept.addEventListener("change", filterAndRenderComplaints);
+
+      // Accounts filters
+      const accSearch = document.getElementById("accountsSearchFilter");
+      const accRole = document.getElementById("accountsRoleFilter");
+      const accDept = document.getElementById("accountsDeptFilter");
+      const accStatus = document.getElementById("accountsStatusFilter");
+      if (accSearch) accSearch.addEventListener("input", filterAndRenderAccounts);
+      if (accRole) accRole.addEventListener("change", filterAndRenderAccounts);
+      if (accDept) accDept.addEventListener("change", filterAndRenderAccounts);
+      if (accStatus) accStatus.addEventListener("change", filterAndRenderAccounts);
+    }
+
+    /**
+     * Load Complaints and live metrics from backend
+     */
+    async function loadAdminComplaintsData() {
+      const loading = document.getElementById("complaintsLoadingState");
+      const errorBox = document.getElementById("complaintsErrorState");
+      const tableContainer = document.getElementById("complaintsTableContainer");
+      const emptyBox = document.getElementById("complaintsEmptyState");
+
+      try {
+        if (loading) loading.style.display = "block";
+        if (errorBox) errorBox.style.display = "none";
+
+        const [metrics, complaints] = await Promise.all([
+          apiClient.getAdminMetrics(),
+          apiClient.getAllComplaintsAdmin()
+        ]);
+
+        if (loading) loading.style.display = "none";
+
+        campusComplaints = Array.isArray(complaints) ? complaints : [];
+
+        // Update 6 Status Card Live Counts
+        document.getElementById("metricSubmitted").textContent = metrics.submitted || 0;
+        document.getElementById("metricReview").textContent = metrics.underReview || 0;
+        document.getElementById("metricProgress").textContent = metrics.inProgress || 0;
+        document.getElementById("metricVerification").textContent = metrics.studentVerification || metrics.awaitingVerification || 0;
+        document.getElementById("metricResolved").textContent = metrics.resolvedClosed || (Number(metrics.resolved || 0) + Number(metrics.closed || 0)) || 0;
+        document.getElementById("metricDeclined").textContent = metrics.declined || 0;
+
+        filterAndRenderComplaints();
+
+      } catch (err) {
+        console.error("Failed to load admin complaints:", err);
+        if (loading) loading.style.display = "none";
+        if (tableContainer) tableContainer.style.display = "none";
+        if (emptyBox) emptyBox.style.display = "none";
+        if (errorBox) {
+          errorBox.style.display = "block";
+          document.getElementById("complaintsErrorMsg").textContent = err.message || "Failed to load complaints from backend server.";
+        }
+      }
+    }
+
+    /**
+     * Filter and render complaints table
+     * - On Dashboard: displays up to 5 most recently submitted tickets sorted newest first
+     * - On Status Pages: displays all matching tickets for that status
+     * - Search & Department filtering works seamlessly across all views
+     */
+    function filterAndRenderComplaints() {
+      const search = (document.getElementById("complaintsSearchFilter")?.value || "").trim().toLowerCase();
+      const deptFilter = (document.getElementById("complaintsDeptFilter")?.value || "ALL").toUpperCase();
+      const norm = (s) => String(s || "").toUpperCase().replace(/\s+/g, "_");
+
+      // Sort by server-generated submittedAt timestamp newest first
+      const sorted = [...campusComplaints].sort((a, b) => {
+        const timeA = a && a.submittedAt ? new Date(a.submittedAt).getTime() : 0;
+        const timeB = b && b.submittedAt ? new Date(b.submittedAt).getTime() : 0;
+        return timeB - timeA;
+      });
+
+      // Filter by active status view, department, and search text
+      const filtered = sorted.filter(c => {
+        const sUpper = norm(c.statusCode || c.status);
+
+        let matchesStatus = true;
+        if (activeAdminView === "DASHBOARD") {
+          matchesStatus = true;
+        } else if (activeAdminView === "RESOLVED_CLOSED") {
+          matchesStatus = (sUpper === "RESOLVED" || sUpper === "CLOSED");
+        } else if (activeAdminView === "AWAITING_VERIFICATION") {
+          matchesStatus = (sUpper === "AWAITING_VERIFICATION");
+        } else if (activeAdminView === "IN_PROGRESS") {
+          matchesStatus = (sUpper === "IN_PROGRESS" || sUpper === "REWORK_REQUIRED");
+        } else {
+          matchesStatus = (sUpper === activeAdminView);
+        }
+
+        const matchesDept = (deptFilter === "ALL") || (c.department && c.department.toUpperCase() === deptFilter);
+
+        const loc = `${c.campusBlock || c.block || ""} ${c.floorLevel || c.floor || ""} ${c.specificLocation || ""}`.toLowerCase();
+        const matchesSearch = !search ||
+          (c.ticketId && c.ticketId.toLowerCase().includes(search)) ||
+          loc.includes(search) ||
+          (c.issueTitle && c.issueTitle.toLowerCase().includes(search)) ||
+          (c.description && c.description.toLowerCase().includes(search)) ||
+          (c.studentEmail && c.studentEmail.toLowerCase().includes(search)) ||
+          (c.studentName && c.studentName.toLowerCase().includes(search));
+
+        return matchesStatus && matchesDept && matchesSearch;
+      });
+
+      // Show only 5 most recent tickets on Dashboard; show all on status-specific pages
+      let displayed = filtered;
+      if (activeAdminView === "DASHBOARD") {
+        displayed = filtered.slice(0, 5);
+      }
+
+      // Update table count badge
+      const countEl = document.getElementById("complaintsTableCount");
+      if (countEl) {
+        if (activeAdminView === "DASHBOARD") {
+          if (filtered.length > 5) {
+            countEl.textContent = `Showing 5 of ${filtered.length} recent complaints`;
+          } else {
+            countEl.textContent = `Showing ${displayed.length} complaint${displayed.length === 1 ? '' : 's'}`;
+          }
+        } else {
+          countEl.textContent = `Showing ${displayed.length} complaint${displayed.length === 1 ? '' : 's'}`;
+        }
+      }
+
+      renderComplaintsTable(displayed);
+    }
+
+    function renderComplaintsTable(list) {
+      const tbody = document.getElementById("complaintsTableBody");
+      const empty = document.getElementById("complaintsEmptyState");
+      const tableContainer = document.getElementById("complaintsTableContainer");
+      const search = (document.getElementById("complaintsSearchFilter")?.value || "").trim();
+      const deptFilter = document.getElementById("complaintsDeptFilter")?.value || "ALL";
+
+      if (!list || list.length === 0) {
+        tbody.innerHTML = "";
+        tableContainer.style.display = "none";
+        empty.style.display = "block";
+
+        const title = document.getElementById("complaintsEmptyTitle");
+        const desc = document.getElementById("complaintsEmptyDesc");
+
+        if (deptFilter !== "ALL" || search) {
+          title.textContent = "No Complaints Matching Filters";
+          desc.textContent = "No infrastructure complaints match your selected search or department filter.";
+        } else if (activeAdminView !== "DASHBOARD") {
+          const cfg = VIEW_CONFIG[activeAdminView];
+          title.textContent = `No ${cfg ? cfg.title : "Complaints"} Found`;
+          desc.textContent = "There are currently no complaints in this status category.";
+        } else {
+          title.textContent = "No Complaints Recorded";
+          desc.textContent = "There are currently no infrastructure complaints in the PostgreSQL database.";
+        }
+        renderAllIcons();
+        return;
+      }
+
+      tableContainer.style.display = "block";
+      empty.style.display = "none";
+
+      tbody.innerHTML = list.map(c => {
+        const time = c.submittedAt ? formatTime(c.submittedAt) : "—";
+        const emergencyTag = c.emergency ? `<span class="badge-emergency-pill"><i data-icon="alert-triangle"></i> EMERGENCY</span>` : "";
+
+        const reporterName = c.studentName ? escapeHtml(c.studentName) : "Anonymous";
+        const reporterEmail = c.studentEmail ? escapeHtml(c.studentEmail) : "—";
+
+        const locBlockFloor = `${escapeHtml(c.campusBlock || c.block || "Campus")} &bull; ${escapeHtml(c.floorLevel || c.floor || "Floor")}`;
+        const locSpecific = escapeHtml(c.specificLocation || "Location");
+
+        return `
+          <tr>
+            <td class="col-ticket">
+              <div class="ticket-id-wrap">
+                <span class="ticket-id-tag">${escapeHtml(c.ticketId)}</span>
+                ${emergencyTag}
+              </div>
+            </td>
+            <td class="col-dept">
+              <span class="badge ${getDeptBadgeClass(c.department)}">
+                ${escapeHtml(c.departmentLabel || c.department || "—")}
+              </span>
+            </td>
+            <td class="col-loc">
+              <div class="loc-primary">${locBlockFloor}</div>
+              <div class="loc-secondary">${locSpecific}</div>
+            </td>
+            <td class="col-summary">
+              <div class="summary-title">${escapeHtml(c.issueTitle || "Complaint")}</div>
+              <div class="summary-desc" title="${escapeHtml(c.description || "")}">
+                ${escapeHtml(c.description || "—")}
+              </div>
+            </td>
+            <td class="col-status">
+              ${renderStatusBadge(c.status)}
+              ${c.escalatedToAdmin ? `<span class="badge badge-escalated">ESCALATED</span>` : ''}
+            </td>
+            <td class="col-reporter">
+              <div class="reporter-name">${reporterName}</div>
+              <div class="reporter-email">${reporterEmail}</div>
+            </td>
+            <td class="col-logged">${time}</td>
+            <td class="col-action">
+              <button type="button" class="btn-action-view" onclick="openAdminTicketDetails('${escapeHtml(c.ticketId)}')">
+                <i data-icon="eye"></i> View
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      renderAllIcons();
+    }
+
+    /**
+     * Load Accounts Data from backend
+     */
+    async function loadAdminAccountsData() {
+      const loading = document.getElementById("accountsLoadingState");
+      const errorBox = document.getElementById("accountsErrorState");
+      const tableContainer = document.getElementById("accountsTableContainer");
+      const emptyBox = document.getElementById("accountsEmptyState");
+
+      try {
+        if (loading) loading.style.display = "block";
+        if (errorBox) errorBox.style.display = "none";
+
+        const users = await apiClient.getAdminUsers();
+        if (loading) loading.style.display = "none";
+
+        campusUsers = Array.isArray(users) ? users : [];
+        filterAndRenderAccounts();
+
+      } catch (err) {
+        console.error("Failed to load user accounts:", err);
+        if (loading) loading.style.display = "none";
+        if (tableContainer) tableContainer.style.display = "none";
+        if (emptyBox) emptyBox.style.display = "none";
+        if (errorBox) {
+          errorBox.style.display = "block";
+          document.getElementById("accountsErrorMsg").textContent = err.message || "Failed to load user accounts from backend server.";
+        }
+      }
+    }
+
+    /**
+     * Filter and render accounts table
+     */
+    function filterAndRenderAccounts() {
+      const search = (document.getElementById("accountsSearchFilter").value || "").trim().toLowerCase();
+      const roleFilter = (document.getElementById("accountsRoleFilter").value || "ALL").toUpperCase();
+      const deptFilter = (document.getElementById("accountsDeptFilter").value || "ALL").toUpperCase();
+      const statusFilter = (document.getElementById("accountsStatusFilter").value || "ALL").toUpperCase();
+
+      const filtered = campusUsers.filter(u => {
+        const matchesRole = (roleFilter === "ALL") || (u.role && u.role.toUpperCase() === roleFilter);
+        const matchesDept = (deptFilter === "ALL") || (u.department && u.department.toUpperCase() === deptFilter);
+
+        let matchesStatus = true;
+        if (statusFilter === "ACTIVE") matchesStatus = (u.active === true);
+        else if (statusFilter === "DEACTIVATED") matchesStatus = (u.active === false);
+
+        const matchesSearch = !search ||
+          (u.email && u.email.toLowerCase().includes(search)) ||
+          (u.fullName && u.fullName.toLowerCase().includes(search)) ||
+          (u.phone && u.phone.includes(search));
+
+        return matchesRole && matchesDept && matchesStatus && matchesSearch;
+      });
+
+      const countEl = document.getElementById("accountsTableCount");
+      countEl.textContent = `Showing ${filtered.length} of ${campusUsers.length} accounts`;
+
+      renderAccountsTable(filtered);
+    }
+
+    function renderAccountsTable(list) {
+      const tbody = document.getElementById("accountsTableBody");
+      const empty = document.getElementById("accountsEmptyState");
+      const tableContainer = document.getElementById("accountsTableContainer");
+
+      if (!list || list.length === 0) {
+        tbody.innerHTML = "";
+        tableContainer.style.display = "none";
+        empty.style.display = "block";
+        renderAllIcons();
+        return;
+      }
+
+      tableContainer.style.display = "block";
+      empty.style.display = "none";
+
+      const currentEmail = (currentUser && currentUser.email) ? currentUser.email.toLowerCase() : "";
+
+      tbody.innerHTML = list.map(u => {
+        const uEmail = (u.email || "").toLowerCase();
+        const isSelf = (currentEmail && uEmail === currentEmail);
+
+        const roleBadge = `<span class="role-badge ${getRoleBadgeClass(u.role)}">${escapeHtml(u.roleDisplayName || u.role)}</span>`;
+
+        const deptBadge = u.departmentDisplayName || u.department
+          ? `<span class="badge ${getDeptBadgeClass(u.department)}">${escapeHtml(u.departmentDisplayName || u.department)}</span>`
+          : `<span style="color: var(--color-text-muted);">&mdash;</span>`;
+
+        const statusBadge = u.active
+          ? `<span class="badge badge-resolved">Active</span>`
+          : `<span class="badge badge-danger">Deactivated</span>`;
+
+        const createdDate = u.createdAt ? formatDateTime(u.createdAt) : "&mdash;";
+
+        let actionContent = "";
+        if (!u.active) {
+          actionContent = `<span style="font-size: 0.8rem; color: #94a3b8; font-weight: 500;">Deactivated</span>`;
+        } else if (isSelf) {
+          actionContent = `<button type="button" class="btn btn-sm btn-outline" disabled title="You cannot deactivate your own session" style="opacity:0.5;">Self</button>`;
+        } else {
+          actionContent = `<button type="button" class="btn btn-sm btn-danger" onclick="promptDeactivateUser(${u.id}, '${escapeHtml(u.email)}', '${escapeHtml(u.fullName)}')">Deactivate</button>`;
+        }
+
+        return `
+          <tr>
+            <td class="col-acc-user"><strong style="font-family: var(--font-mono); font-size: 0.85rem;">${escapeHtml(u.email)}</strong></td>
+            <td class="col-acc-name">${escapeHtml(u.fullName || "&mdash;")}</td>
+            <td class="col-acc-email" style="font-size: 0.85rem; color: var(--color-text-muted);">${escapeHtml(u.email)}</td>
+            <td class="col-acc-role">${roleBadge}</td>
+            <td class="col-acc-dept">${deptBadge}</td>
+            <td class="col-acc-status">${statusBadge}</td>
+            <td class="col-acc-date" style="font-size: 0.85rem; color: var(--color-text-muted);">${createdDate}</td>
+            <td class="col-acc-action">${actionContent}</td>
+          </tr>
+        `;
+      }).join("");
+
+      renderAllIcons();
+    }
+
+    function getRoleBadgeClass(role) {
+      const r = String(role || "").toUpperCase();
+      if (r === "ADMIN") return "role-admin";
+      if (r.includes("ELECT")) return "role-electrical";
+      if (r.includes("PLUMB")) return "role-plumbing";
+      if (r.includes("CLEAN")) return "role-cleaning";
+      if (r.includes("IT") || r.includes("TECH")) return "role-it";
+      return "role-student";
+    }
+
+    /**
+     * Create Account Form Toggle & Submission
+     */
+    function toggleCreateAccountForm(forceShow) {
+      const card = document.getElementById("createAccountCard");
+      const btn = document.getElementById("btnToggleCreateAccount");
+      const feedback = document.getElementById("createAccountFeedback");
+      if (!card) return;
+
+      const isCurrentlyVisible = card.classList.contains("visible") && card.style.display !== "none";
+      const show = (typeof forceShow === "boolean") ? forceShow : !isCurrentlyVisible;
+
+      if (show) {
+        card.style.display = "block";
+        card.classList.add("visible");
+        if (btn) {
+          btn.innerHTML = `${getIconSvg("x")} <span>Cancel</span>`;
+        }
+        document.getElementById("createAccountForm").reset();
+        handleRoleSelectionChange();
+        document.getElementById("newUserRole").focus();
+      } else {
+        card.style.display = "none";
+        card.classList.remove("visible");
+        if (btn) {
+          btn.innerHTML = `${getIconSvg("plus")} <span>Create Account</span>`;
+        }
+      }
+      if (feedback) feedback.style.display = "none";
+      renderAllIcons();
+    }
+
+    function handleRoleSelectionChange() {
+      const role = document.getElementById("newUserRole").value;
+      const deptSelect = document.getElementById("newUserDept");
+
+      if (role === "STUDENT" || role === "ADMIN" || !role) {
+        deptSelect.value = "";
+        deptSelect.disabled = true;
+      } else {
+        deptSelect.disabled = false;
+        if (role === "ELECTRICAL") deptSelect.value = "ELECTRICAL";
+        else if (role === "PLUMBING") deptSelect.value = "PLUMBING";
+        else if (role === "CLEANING") deptSelect.value = "CLEANING";
+        else if (role === "IT_SUPPORT") deptSelect.value = "IT_SUPPORT";
+      }
+    }
+
+    function togglePasswordVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+
+      const isPassword = (input.type === "password");
+      input.type = isPassword ? "text" : "password";
+      btn.innerHTML = isPassword ? getIconSvg("eye-off") : getIconSvg("eye");
+      btn.title = isPassword ? "Hide password" : "Show password";
+      renderAllIcons();
+    }
+
+    async function handleCreateAccount(event) {
+      event.preventDefault();
+
+      const role = document.getElementById("newUserRole").value;
+      const dept = document.getElementById("newUserDept").value || null;
+      const email = document.getElementById("newUserEmail").value.trim();
+      const fullName = document.getElementById("newUserFullName").value.trim();
+      const phone = document.getElementById("newUserPhone").value.trim();
+      const password = document.getElementById("newUserPassword").value;
+
+      const feedback = document.getElementById("createAccountFeedback");
+      const submitBtn = document.getElementById("btnSubmitCreateAccount");
+
+      if (!email || !fullName || !role || !password) {
+        showFormFeedback("Please fill in all required fields.", "danger");
+        return;
+      }
+
+      if (password.length < 6) {
+        showFormFeedback("Initial password must be at least 6 characters long.", "danger");
+        return;
+      }
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Creating...";
+
+        const payload = {
+          email,
+          fullName,
+          role,
+          department: dept,
+          phone: phone || null,
+          password
+        };
+
+        const created = await apiClient.createAdminUser(payload);
+
+        showToast(`Account for ${created.email} created successfully.`, "success");
+        toggleCreateAccountForm(false);
+        loadAdminAccountsData();
+
+      } catch (err) {
+        console.error("Account creation failed:", err);
+        showFormFeedback(err.message || "Failed to create account. Please verify your input.", "danger");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Create Account";
+      }
+    }
+
+    function showFormFeedback(msg, type) {
+      const box = document.getElementById("createAccountFeedback");
+      if (!box) return;
+      box.style.display = "block";
+      if (type === "danger") {
+        box.style.background = "#fef2f2";
+        box.style.border = "1px solid #fecaca";
+        box.style.color = "#991b1b";
+      } else {
+        box.style.background = "#f0fdf4";
+        box.style.border = "1px solid #bbf7d0";
+        box.style.color = "#15803d";
+      }
+      box.textContent = msg;
+    }
+
+    /**
+     * Account Deactivation with Confirmation
+     */
+    function promptDeactivateUser(userId, email, fullName) {
+      pendingDeactivateUserId = userId;
+      const msg = document.getElementById("deactivateConfirmMsg");
+      msg.innerHTML = `Are you sure you want to deactivate the account for <strong>${escapeHtml(fullName || email)}</strong> (<span style="font-family: monospace;">${escapeHtml(email)}</span>)?`;
+
+      const confirmBtn = document.getElementById("btnConfirmDeactivate");
+      confirmBtn.onclick = executeDeactivateUser;
+
+      openModal("deactivateConfirmModal");
+      renderAllIcons();
+    }
+
+    async function executeDeactivateUser() {
+      if (!pendingDeactivateUserId) return;
+
+      const confirmBtn = document.getElementById("btnConfirmDeactivate");
+      try {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = "Deactivating...";
+
+        const result = await apiClient.deactivateAdminUser(pendingDeactivateUserId);
+
+        closeModal("deactivateConfirmModal");
+        showToast(`Account ${result.email} has been deactivated successfully.`, "success");
+        loadAdminAccountsData();
+
+      } catch (err) {
+        console.error("Deactivation failed:", err);
+        showToast(err.message || "Failed to deactivate account.", "danger");
+      } finally {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = "Yes, Deactivate Account";
+        pendingDeactivateUserId = null;
+      }
+    }
+
+    /**
+     * Structured Ticket Inspection Modal
+     */
+    async function openAdminTicketDetails(ticketId) {
+      let c = campusComplaints.find(x => x.ticketId === ticketId);
+      try {
+        const fresh = await apiClient.getComplaint(ticketId);
+        if (fresh && fresh.ticketId) {
+          c = fresh;
+        }
+      } catch (err) {
+        console.warn("Using cached ticket details:", err);
+      }
+
+      if (!c) return;
+
+      const title = c.issueTitle || (c.description ? (c.description.length > 50 ? c.description.substring(0, 50) + "..." : c.description) : "Campus Issue");
+      const titleEl = document.getElementById("adminDetailIssueTitle");
+      if (titleEl) {
+        titleEl.innerHTML = `${escapeHtml(title)} &bull; <span class="ticket-id-tag">${escapeHtml(c.ticketId || "")}</span>`;
+      }
+
+      const metaEl = document.getElementById("adminDetailStructuredMeta");
+      if (metaEl) {
+        metaEl.innerHTML = renderStructuredComplaintMetadata(c);
+      }
+
+      updateProgressTracker(c);
+      openModal("ticketDetailsModal");
+      renderAllIcons();
+
+      if (typeof initSlaCountdownTimer === "function") {
+        initSlaCountdownTimer(c, `slaCountdownContainer_${c.ticketId}`);
+      }
+    }
+
+    function updateProgressTracker(c) {
+      const rawStatus = (c.statusCode || c.status || "").toUpperCase();
+
+      const node1 = document.getElementById("adminNode1");
+      const node2 = document.getElementById("adminNode2");
+      const node3 = document.getElementById("adminNode3");
+      const node4 = document.getElementById("adminNode4");
+      const node5 = document.getElementById("adminNode5");
+
+      const sub1 = document.getElementById("adminNodeSub1");
+      const sub2 = document.getElementById("adminNodeSub2");
+      const sub3 = document.getElementById("adminNodeSub3");
+      const sub4 = document.getElementById("adminNodeSub4");
+      const sub5 = document.getElementById("adminNodeSub5");
+
+      const fill = document.getElementById("adminTrackerLineFill");
+
+      if (!node1 || !node2 || !node3 || !node4 || !node5) return;
+
+      [node1, node2, node3, node4, node5].forEach((n, idx) => {
+        n.className = "tracker-circle";
+        n.textContent = (idx + 1).toString();
+      });
+
+      if (sub1) sub1.textContent = c.submittedAt ? formatTime(c.submittedAt) : "—";
+      if (sub2) sub2.textContent = "Pending review";
+      if (sub3) sub3.textContent = "Scheduled";
+      if (sub4) sub4.textContent = "Repair evidence";
+      if (sub5) sub5.textContent = "Resolved";
+
+      if (rawStatus === "SUBMITTED") {
+        node1.className = "tracker-circle tracker-circle-current";
+        if (fill) fill.style.width = "0%";
+      } else if (rawStatus === "UNDER_REVIEW") {
+        node1.className = "tracker-circle tracker-circle-completed";
+        node1.textContent = "✓";
+        node2.className = "tracker-circle tracker-circle-current";
+        if (sub2) sub2.textContent = c.reviewedAt ? formatTime(c.reviewedAt) : "Active";
+        if (fill) fill.style.width = "25%";
+      } else if (rawStatus === "IN_PROGRESS" || rawStatus === "REWORK_REQUIRED") {
+        node1.className = "tracker-circle tracker-circle-completed";
+        node1.textContent = "✓";
+        node2.className = "tracker-circle tracker-circle-completed";
+        node2.textContent = "✓";
+        node3.className = "tracker-circle tracker-circle-current";
+        if (sub2) sub2.textContent = "Reviewed";
+        if (sub3) sub3.textContent = c.inProgressAt ? formatTime(c.inProgressAt) : "Repair active";
+        if (fill) fill.style.width = "50%";
+      } else if (rawStatus === "AWAITING_VERIFICATION") {
+        node1.className = "tracker-circle tracker-circle-completed";
+        node1.textContent = "✓";
+        node2.className = "tracker-circle tracker-circle-completed";
+        node2.textContent = "✓";
+        node3.className = "tracker-circle tracker-circle-completed";
+        node3.textContent = "✓";
+        node4.className = "tracker-circle tracker-circle-current";
+        if (sub2) sub2.textContent = "Reviewed";
+        if (sub3) sub3.textContent = "Completed";
+        if (sub4) sub4.textContent = c.verificationRequestedAt ? formatTime(c.verificationRequestedAt) : "Awaiting student";
+        if (fill) fill.style.width = "75%";
+      } else if (rawStatus === "CLOSED" || rawStatus === "RESOLVED") {
+        [node1, node2, node3, node4, node5].forEach(n => {
+          n.className = "tracker-circle tracker-circle-completed";
+          n.textContent = "✓";
+        });
+        if (sub2) sub2.textContent = "Reviewed";
+        if (sub3) sub3.textContent = "Completed";
+        if (sub4) sub4.textContent = "Verified";
+        if (sub5) sub5.textContent = c.resolvedAt ? formatTime(c.resolvedAt) : "Closed";
+        if (fill) fill.style.width = "100%";
+      } else if (rawStatus === "DECLINED") {
+        node1.className = "tracker-circle tracker-circle-completed";
+        node1.textContent = "✓";
+        node2.className = "tracker-circle tracker-circle-declined";
+        node2.textContent = "✕";
+        if (sub2) sub2.textContent = "Declined";
+        if (fill) fill.style.width = "25%";
+      }
+    }
+
+    /**
+     * Status Badges and Helpers
+     */
+    function renderStatusBadge(status) {
+      const s = (status || "").toUpperCase();
+      switch (s) {
+        case "SUBMITTED":
+          return '<span class="badge badge-submitted">Submitted</span>';
+        case "UNDER_REVIEW":
+          return '<span class="badge badge-review">Under Review</span>';
+        case "IN_PROGRESS":
+          return '<span class="badge badge-in-progress">In Progress</span>';
+        case "AWAITING_VERIFICATION":
+          return '<span class="badge badge-verification">Verification</span>';
+        case "CLOSED":
+        case "RESOLVED":
+          return '<span class="badge badge-resolved">Resolved</span>';
+        case "DECLINED":
+          return '<span class="badge badge-danger">Declined</span>';
+        default:
+          return `<span class="badge">${escapeHtml(status || "—")}</span>`;
+      }
+    }
+
+    function getDeptBadgeClass(dept) {
+      const d = String(dept || "").toUpperCase();
+      if (d.includes("ELECT")) return "role-electrical";
+      if (d.includes("PLUMB")) return "role-plumbing";
+      if (d.includes("CLEAN")) return "role-cleaning";
+      if (d.includes("IT") || d.includes("TECH")) return "role-it";
+      return "role-student";
+    }
+
+    function formatTime(isoStr) {
+      if (!isoStr) return "—";
+      try {
+        const d = new Date(isoStr);
+        return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      } catch (e) {
+        return isoStr;
+      }
+    }
+
+    function formatDateTime(isoStr) {
+      if (!isoStr) return "—";
+      try {
+        const d = new Date(isoStr);
+        return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      } catch (e) {
+        return isoStr;
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>

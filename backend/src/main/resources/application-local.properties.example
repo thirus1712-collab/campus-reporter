@@ -1,0 +1,12 @@
+# ===================================================================
+# Local Configuration Override Template (DO NOT COMMIT PASSWORDS)
+# ===================================================================
+# To configure your local database credentials without environment variables:
+# 1. Copy this file and name it 'application-local.properties' in this directory
+#    (or inside the backend/ folder).
+# 2. Fill in your actual PostgreSQL password.
+# 3. 'application-local.properties' is already in .gitignore and won't be committed.
+#
+# DB_URL=jdbc:postgresql://localhost:1234/campus_reporter_new
+# DB_USERNAME=postgres
+# DB_PASSWORD=your_actual_postgresql_password

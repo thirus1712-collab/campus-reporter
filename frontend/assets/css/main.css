@@ -1,0 +1,888 @@
+/* ===================================================================
+   Smart Campus Infrastructure Problem Reporter
+   Enterprise Design System & Multi-Portal Design Tokens
+   =================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Global Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /* Global Neutral Scale */
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+
+  /* Global Surfaces & Borders */
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f1f5f9;
+  --color-surface-hover: #f8fafc;
+  --border-color: #e2e8f0;
+  --border-color-subtle: #f1f5f9;
+  --border-color-focus: #0f766e;
+
+  /* Global Text */
+  --color-text-main: #0f172a;
+  --color-text-muted: #64748b;
+  --color-text-light: #94a3b8;
+  --color-text-inverse: #ffffff;
+
+  /* Global Radii */
+  --radius-xs: 3px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-pill: 9999px;
+
+  /* Restrained Enterprise Shadows */
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 12px 24px -4px rgba(15, 23, 42, 0.12), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
+
+  /* Global Transitions */
+  --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Standard Universal Status Meaning Tokens */
+  --status-submitted-text: #1d4ed8;
+  --status-submitted-bg: #eff6ff;
+  --status-submitted-border: #bfdbfe;
+
+  --status-review-text: #4338ca;
+  --status-review-bg: #eef2ff;
+  --status-review-border: #c7d2fe;
+
+  --status-progress-text: #0284c7;
+  --status-progress-bg: #f0f9ff;
+  --status-progress-border: #bae6fd;
+
+  --status-verification-text: #c2410c;
+  --status-verification-bg: #fff7ed;
+  --status-verification-border: #fed7aa;
+
+  --status-resolved-text: #15803d;
+  --status-resolved-bg: #f0fdf4;
+  --status-resolved-border: #bbf7d0;
+
+  --status-declined-text: #b91c1c;
+  --status-declined-bg: #fef2f2;
+  --status-declined-border: #fecaca;
+
+  --status-rework-text: #b45309;
+  --status-rework-bg: #fffbeb;
+  --status-rework-border: #fde68a;
+
+  --status-overdue-text: #991b1b;
+  --status-overdue-bg: #fef2f2;
+  --status-overdue-border: #f87171;
+
+  /* Default Portal Fallback (Student / General) */
+  --portal-accent: #0f766e;
+  --portal-accent-hover: #115e59;
+  --portal-accent-light: #0d9488;
+  --portal-accent-soft: #f0fdfa;
+  --portal-accent-border: #99f6e4;
+  --portal-accent-contrast: #ffffff;
+  --portal-header-bg: #ffffff;
+  --portal-header-border: #e2e8f0;
+  --portal-header-text: #0f172a;
+  --portal-header-subtext: #64748b;
+  --portal-bg: #f8fafc;
+  --portal-surface: #ffffff;
+  --portal-surface-muted: #f1f5f9;
+}
+
+/* ===================================================================
+   PORTAL THEME IDENTITIES (Consistently across all screens)
+   =================================================================== */
+
+/* Theme A: Student Portal — Academic Slate + Teal */
+[data-portal="student"] {
+  --portal-accent: #0f766e;
+  --portal-accent-hover: #115e59;
+  --portal-accent-light: #0d9488;
+  --portal-accent-soft: #f0fdfa;
+  --portal-accent-border: #99f6e4;
+  --portal-accent-contrast: #ffffff;
+  --portal-header-bg: #ffffff;
+  --portal-header-border: #e2e8f0;
+  --portal-header-text: #0f172a;
+  --portal-header-subtext: #475569;
+  --portal-bg: #f8fafc;
+  --portal-surface: #ffffff;
+  --portal-surface-muted: #f1f5f9;
+  --border-color-focus: #0f766e;
+}
+
+/* Theme B: Electrical Department Portal — Technical Operations: Graphite + Amber */
+[data-portal="electrical"] {
+  --portal-accent: #d97706;
+  --portal-accent-hover: #b45309;
+  --portal-accent-light: #f59e0b;
+  --portal-accent-soft: #fffbeb;
+  --portal-accent-border: #fde68a;
+  --portal-accent-contrast: #ffffff;
+  --portal-header-bg: #111827;
+  --portal-header-border: #1f2937;
+  --portal-header-text: #f9fafb;
+  --portal-header-subtext: #9ca3af;
+  --portal-bg: #f9fafb;
+  --portal-surface: #ffffff;
+  --portal-surface-muted: #f3f4f6;
+  --border-color: #e5e7eb;
+  --border-color-focus: #d97706;
+}
+
+/* Theme C: Plumbing Department Portal — Water & Facilities: Deep Teal + Aqua */
+[data-portal="plumbing"] {
+  --portal-accent: #0f766e;
+  --portal-accent-hover: #115e59;
+  --portal-accent-light: #0d9488;
+  --portal-accent-soft: #f0fdfa;
+  --portal-accent-border: #99f6e4;
+  --portal-accent-contrast: #ffffff;
+  --portal-secondary: #0891b2;
+  --portal-secondary-hover: #0e7490;
+  --portal-secondary-light: #06b6d4;
+  --portal-secondary-soft: #ecfeff;
+  --portal-secondary-border: #a5f3fc;
+  --portal-secondary-text: #155e75;
+  --portal-sidebar-bg: #0f766e;
+  --portal-sidebar-border: #115e59;
+  --portal-sidebar-text: #ccfbf1;
+  --portal-sidebar-active: #ffffff;
+  --portal-sidebar-active-bg: rgba(8, 145, 178, 0.35);
+  --portal-sidebar-active-border: #06b6d4;
+  --portal-header-bg: #0f766e;
+  --portal-header-border: #115e59;
+  --portal-header-text: #ffffff;
+  --portal-header-subtext: #ccfbf1;
+  --portal-bg: #f8fafc;
+  --portal-surface: #ffffff;
+  --portal-surface-muted: #f0fdfa;
+  --border-color: #cbd5e1;
+  --border-color-focus: #0f766e;
+}
+
+/* Theme D: Cleaning Department Portal — Campus Facilities & Hygiene: Forest Green + Warm Stone */
+[data-portal="cleaning"] {
+  --portal-accent: #166534;
+  --portal-accent-hover: #14532d;
+  --portal-accent-light: #15803d;
+  --portal-accent-soft: #f0fdf4;
+  --portal-accent-border: #bbf7d0;
+  --portal-accent-contrast: #ffffff;
+  --portal-secondary: #78716c;
+  --portal-secondary-hover: #57534e;
+  --portal-secondary-light: #a8a29e;
+  --portal-secondary-soft: #fafaf9;
+  --portal-secondary-border: #e7e5e4;
+  --portal-secondary-text: #292524;
+  --portal-sidebar-bg: #14532d;
+  --portal-sidebar-border: #144023;
+  --portal-sidebar-text: #e7e5e4;
+  --portal-sidebar-active: #ffffff;
+  --portal-sidebar-active-bg: rgba(231, 229, 228, 0.2);
+  --portal-sidebar-active-border: #e7e5e4;
+  --portal-header-bg: #1c3d27;
+  --portal-header-border: #142e1d;
+  --portal-header-text: #ffffff;
+  --portal-header-subtext: #dcfce7;
+  --portal-bg: #fafaf9;
+  --portal-surface: #ffffff;
+  --portal-surface-muted: #f5f5f4;
+  --border-color: #e7e5e4;
+  --border-color-focus: #166534;
+}
+
+/* Theme E: IT & Technical Support Portal — Technical Service Desk: Indigo + Cool Grey */
+[data-portal="it_support"] {
+  --portal-accent: #4338ca;
+  --portal-accent-hover: #3730a3;
+  --portal-accent-light: #4f46e5;
+  --portal-accent-soft: #eef2ff;
+  --portal-accent-border: #c7d2fe;
+  --portal-accent-contrast: #ffffff;
+  --portal-secondary: #475569;
+  --portal-secondary-hover: #334155;
+  --portal-secondary-light: #64748b;
+  --portal-secondary-soft: #f8fafc;
+  --portal-secondary-border: #e2e8f0;
+  --portal-secondary-text: #0f172a;
+  --portal-sidebar-bg: #1e1b4b;
+  --portal-sidebar-border: #312e81;
+  --portal-sidebar-text: #cbd5e1;
+  --portal-sidebar-active: #ffffff;
+  --portal-sidebar-active-bg: rgba(99, 102, 241, 0.25);
+  --portal-sidebar-active-border: #818cf8;
+  --portal-header-bg: #1e1b4b;
+  --portal-header-border: #312e81;
+  --portal-header-text: #f5f3ff;
+  --portal-header-subtext: #c7d2fe;
+  --portal-bg: #f8fafc;
+  --portal-surface: #ffffff;
+  --portal-surface-muted: #f1f5f9;
+  --border-color: #e2e8f0;
+  --border-color-focus: #4338ca;
+}
+
+/* Theme F: Administration Portal — Royal Blue + Light Cream */
+[data-portal="admin"] {
+  --portal-accent: #014BAA;
+  --portal-accent-hover: #013b88;
+  --portal-accent-light: #1a62c6;
+  --portal-accent-soft: #eaf1fb;
+  --portal-accent-border: #b8d2f5;
+  --portal-accent-contrast: #ffffff;
+  --portal-sidebar-bg: #014BAA;
+  --portal-sidebar-border: #013b88;
+  --portal-sidebar-text: #F8F3F0;
+  --portal-sidebar-active: #ffffff;
+  --portal-sidebar-active-bg: rgba(255, 255, 255, 0.18);
+  --portal-sidebar-active-border: #ffffff;
+  --portal-header-bg: #014BAA;
+  --portal-header-border: rgba(255, 255, 255, 0.15);
+  --portal-header-text: #F8F3F0;
+  --portal-header-subtext: #e2e8f0;
+  --portal-bg: #F8F3F0;
+  --portal-surface: #ffffff;
+  --portal-surface-muted: #f0ebe6;
+  --border-color: #e2ddd9;
+  --border-color-focus: #014BAA;
+}
+
+/* ===================================================================
+   Base Reset & Typography
+   =================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--portal-bg);
+  color: var(--color-text-main);
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 12px;
+  background: var(--portal-accent);
+  color: var(--portal-accent-contrast);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  z-index: 10000;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: top 0.15s ease;
+}
+.skip-link:focus {
+  top: 12px;
+}
+
+/* Containers */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.container-narrow {
+  max-width: 820px;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-text-main);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+h1 { font-size: 1.5rem; }
+h2 { font-size: 1.25rem; }
+h3 { font-size: 1.1rem; }
+h4 { font-size: 0.95rem; }
+
+p {
+  color: var(--color-text-main);
+  line-height: 1.55;
+}
+
+a {
+  color: var(--portal-accent);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+a:hover {
+  color: var(--portal-accent-hover);
+}
+
+/* ===================================================================
+   SVG Icon Engine Utilities
+   =================================================================== */
+.svg-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  flex-shrink: 0;
+  stroke: currentColor;
+}
+
+.icon-spin {
+  animation: iconSpinAnim 1s linear infinite;
+}
+
+@keyframes iconSpinAnim {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.text-success { color: #15803d !important; }
+.text-danger { color: #b91c1c !important; }
+.text-warning { color: #b45309 !important; }
+.text-info { color: #0284c7 !important; }
+
+/* ===================================================================
+   Buttons
+   =================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: var(--transition-fast);
+  text-decoration: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--portal-accent);
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Primary Button (Portal Accent) */
+.btn-primary {
+  background-color: var(--portal-accent);
+  color: var(--portal-accent-contrast);
+  border-color: var(--portal-accent);
+  box-shadow: var(--shadow-xs);
+}
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--portal-accent-hover);
+  border-color: var(--portal-accent-hover);
+  color: #ffffff;
+}
+
+/* Accent Button (Explicit solid style) */
+.btn-accent {
+  background-color: var(--portal-accent);
+  color: var(--portal-accent-contrast);
+  border-color: var(--portal-accent);
+}
+.btn-accent:hover:not(:disabled) {
+  background-color: var(--portal-accent-hover);
+  border-color: var(--portal-accent-hover);
+  color: #ffffff;
+}
+
+/* Secondary / Outline Button */
+.btn-outline, .btn-secondary {
+  background-color: #ffffff;
+  color: var(--color-slate-700);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-xs);
+}
+.btn-outline:hover:not(:disabled), .btn-secondary:hover:not(:disabled) {
+  background-color: var(--color-slate-50);
+  border-color: var(--color-slate-300);
+  color: var(--color-slate-900);
+}
+
+/* Success Button */
+.btn-success {
+  background-color: #15803d;
+  color: #ffffff;
+  border-color: #15803d;
+  box-shadow: var(--shadow-xs);
+}
+.btn-success:hover:not(:disabled) {
+  background-color: #166534;
+  border-color: #166534;
+}
+
+/* Danger / Destructive Button */
+.btn-danger {
+  background-color: #b91c1c;
+  color: #ffffff;
+  border-color: #b91c1c;
+  box-shadow: var(--shadow-xs);
+}
+.btn-danger:hover:not(:disabled) {
+  background-color: #991b1b;
+  border-color: #991b1b;
+}
+
+/* Ghost / Subtle Button */
+.btn-ghost {
+  background-color: transparent;
+  color: var(--color-slate-600);
+  border-color: transparent;
+}
+.btn-ghost:hover:not(:disabled) {
+  background-color: var(--color-slate-100);
+  color: var(--color-slate-900);
+}
+
+/* Button Sizing */
+.btn-sm {
+  padding: 6px 11px;
+  font-size: 0.8rem;
+  border-radius: var(--radius-sm);
+}
+
+.btn-lg {
+  padding: 10px 18px;
+  font-size: 0.95rem;
+  border-radius: var(--radius-md);
+}
+
+/* ===================================================================
+   Form Controls
+   =================================================================== */
+.form-group {
+  margin-bottom: 1.15rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-slate-700);
+  margin-bottom: 5px;
+  letter-spacing: 0.01em;
+}
+
+.form-label .required {
+  color: #dc2626;
+  margin-left: 2px;
+}
+
+.form-control, .form-select {
+  width: 100%;
+  padding: 7px 11px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--color-text-main);
+  background-color: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
+  transition: var(--transition-fast);
+}
+
+.form-control:focus, .form-select:focus {
+  outline: none;
+  border-color: var(--border-color-focus);
+  box-shadow: 0 0 0 3px var(--portal-accent-soft);
+}
+
+.form-control::placeholder {
+  color: var(--color-slate-400);
+}
+
+.form-control:disabled, .form-select:disabled {
+  background-color: var(--color-slate-100);
+  color: var(--color-slate-500);
+  cursor: not-allowed;
+  border-color: var(--color-slate-200);
+}
+
+textarea.form-control {
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.form-error {
+  display: none;
+  color: #b91c1c;
+  font-size: 0.78rem;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.form-help {
+  font-size: 0.75rem;
+  color: var(--color-slate-500);
+  margin-top: 4px;
+}
+
+/* ===================================================================
+   Badges (Status & Department)
+   =================================================================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.725rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* Status Badges */
+.badge-submitted {
+  background-color: var(--status-submitted-bg);
+  color: var(--status-submitted-text);
+  border-color: var(--status-submitted-border);
+}
+
+.badge-under-review {
+  background-color: var(--status-review-bg);
+  color: var(--status-review-text);
+  border-color: var(--status-review-border);
+}
+
+.badge-in-progress {
+  background-color: var(--portal-accent-soft);
+  color: var(--portal-accent);
+  border-color: var(--portal-accent-border);
+}
+
+.badge-verification, .badge-awaiting-approval {
+  background-color: var(--status-verification-bg);
+  color: var(--status-verification-text);
+  border-color: var(--status-verification-border);
+}
+
+.badge-resolved, .badge-closed {
+  background-color: var(--status-resolved-bg);
+  color: var(--status-resolved-text);
+  border-color: var(--status-resolved-border);
+}
+
+.badge-declined {
+  background-color: var(--status-declined-bg);
+  color: var(--status-declined-text);
+  border-color: var(--status-declined-border);
+}
+
+.badge-rework {
+  background-color: var(--status-rework-bg);
+  color: var(--status-rework-text);
+  border-color: var(--status-rework-border);
+}
+
+.badge-overdue {
+  background-color: var(--status-overdue-bg);
+  color: var(--status-overdue-text);
+  border-color: var(--status-overdue-border);
+  font-weight: 700;
+}
+
+/* Department Indicator Badges */
+.dept-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-slate-700);
+}
+
+.dept-pill-icon {
+  display: inline-flex;
+}
+
+.dept-pill-electrical .dept-pill-icon { color: #d97706; }
+.dept-pill-plumbing .dept-pill-icon { color: #0284c7; }
+.dept-pill-cleaning .dept-pill-icon { color: #15803d; }
+.dept-pill-it .dept-pill-icon { color: #4f46e5; }
+
+/* Ticket ID Monospace Badge */
+.ticket-id-tag {
+  font-family: var(--font-mono);
+  font-size: 0.775rem;
+  font-weight: 600;
+  color: var(--color-slate-700);
+  background-color: var(--color-slate-100);
+  border: 1px solid var(--color-slate-200);
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  letter-spacing: -0.02em;
+}
+
+/* ===================================================================
+   Operations Tables
+   =================================================================== */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background-color: var(--portal-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.table th {
+  background-color: var(--color-slate-50);
+  color: var(--color-slate-500);
+  font-size: 0.725rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--color-text-main);
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr {
+  transition: background-color 0.12s ease;
+}
+
+.table tbody tr:hover {
+  background-color: var(--portal-surface-muted);
+}
+
+/* ===================================================================
+   Modals & Overlays
+   =================================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1.25rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal {
+  background-color: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: scale(0.97);
+  transition: transform 0.2s ease;
+}
+
+.modal-overlay.active .modal {
+  transform: scale(1);
+}
+
+.modal-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-close-modal {
+  background: none;
+  border: none;
+  color: var(--color-slate-400);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-xs);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.btn-close-modal:hover {
+  color: var(--color-slate-700);
+  background-color: var(--color-slate-100);
+}
+
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex-grow: 1;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--color-slate-50);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ===================================================================
+   Notification Toast Stack
+   =================================================================== */
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 380px;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background-color: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  font-size: 0.85rem;
+  color: var(--color-text-main);
+  animation: toastSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.toast-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.toast-success {
+  border-left: 3.5px solid #15803d;
+}
+.toast-success .toast-icon {
+  color: #15803d;
+}
+
+.toast-danger {
+  border-left: 3.5px solid #b91c1c;
+}
+.toast-danger .toast-icon {
+  color: #b91c1c;
+}
+
+.toast-warning {
+  border-left: 3.5px solid #b45309;
+}
+.toast-warning .toast-icon {
+  color: #b45309;
+}
+
+.toast-info {
+  border-left: 3.5px solid var(--portal-accent);
+}
+.toast-info .toast-icon {
+  color: var(--portal-accent);
+}

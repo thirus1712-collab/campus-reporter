@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In &bull; Smart Campus Operations Portal</title>
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+  <style>
+    /* Reset & Viewport base */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Clean split-screen layout */
+    .login-split-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: row;
+      background-color: #ffffff;
+      font-family: var(--font-sans);
+      color: #0f172a;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Left pane: College Image (50% width, 100vh height) */
+    .login-image-pane {
+      position: relative;
+      flex: 0 0 50%;
+      width: 50%;
+      min-height: 100vh;
+      background-color: #0f172a;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .login-image-pane img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      display: block;
+      transition: transform 0.6s ease;
+    }
+
+    /* Subtle contemporary gradient overlay on the image for depth & readability */
+    .login-image-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(15, 23, 42, 0.45) 0%,
+        rgba(15, 23, 42, 0.15) 35%,
+        rgba(15, 23, 42, 0.50) 70%,
+        rgba(15, 23, 42, 0.92) 100%
+      );
+      pointer-events: none;
+    }
+
+    /* College image header badge */
+    .image-top-bar {
+      position: relative;
+      z-index: 2;
+      padding: 2rem 2.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .college-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 16px;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.20);
+      border-radius: var(--radius-full);
+      color: #ffffff;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      box-shadow: var(--shadow-md);
+    }
+    .college-tag i {
+      width: 15px;
+      height: 15px;
+      color: #93c5fd;
+    }
+
+    /* College image footer caption */
+    .image-bottom-caption {
+      position: relative;
+      z-index: 2;
+      padding: 2.25rem 2.5rem;
+      color: #ffffff;
+    }
+
+    .college-subtag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #93c5fd;
+      margin-bottom: 0.4rem;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+    }
+
+    .college-title {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+    }
+
+    .college-desc {
+      margin: 0;
+      font-size: 0.925rem;
+      line-height: 1.5;
+      color: #cbd5e1;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+      max-width: 480px;
+    }
+
+    /* Right pane: Login Section */
+    .login-form-pane {
+      flex: 0 0 50%;
+      width: 50%;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2.5rem;
+      background-color: #ffffff;
+      color: #0f172a;
+      box-sizing: border-box;
+      overflow-y: auto;
+      border-left: 1px solid var(--border-color);
+    }
+
+    /* Centered form wrapper */
+    .login-form-wrapper {
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
+      box-sizing: border-box;
+    }
+
+    /* Clean Smart Campus branding header */
+    .login-brand-header {
+      margin-bottom: 1.75rem;
+      text-align: left;
+    }
+
+    .login-brand-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+    .login-brand-title i {
+      width: 22px;
+      height: 22px;
+      color: #0284c7;
+    }
+
+    /* Heading in dark charcoal / navy */
+    .auth-title {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0 0 0.5rem 0;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+    .auth-subtitle {
+      font-size: 0.875rem;
+      color: #64748b;
+      margin: 0 0 1.75rem 0;
+    }
+
+    /* Form inputs */
+    .form-group {
+      margin-bottom: 1.35rem;
+      text-align: left;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.45rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .form-label .required {
+      color: var(--color-danger);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 0.925rem;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: var(--radius-md);
+      color: #0f172a;
+      box-sizing: border-box;
+      transition: var(--transition-fast);
+      font-family: inherit;
+    }
+
+    .form-control:focus {
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+      outline: none;
+    }
+
+    .password-input-group {
+      position: relative;
+    }
+
+    .password-toggle-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      transition: color 0.15s ease;
+    }
+
+    .password-toggle-btn:hover {
+      color: #0f172a;
+    }
+    .password-toggle-btn i {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Enterprise Login Button */
+    .btn-login {
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 11px 18px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #ffffff;
+      background: #0f172a;
+      border: 1px solid #0f172a;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-login:hover:not(:disabled) {
+      background: #1e293b;
+      border-color: #1e293b;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-login:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Role Quick Helper */
+    .login-portal-chips {
+      margin-top: 1.75rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .login-portal-chips-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #64748b;
+    }
+    .portal-chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .portal-chip {
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 900px) {
+      .login-split-page {
+        flex-direction: column;
+      }
+
+      .login-image-pane {
+        width: 100%;
+        flex: 0 0 auto;
+        min-height: 220px;
+        height: 220px;
+      }
+
+      .login-image-pane img {
+        object-position: center 30%;
+      }
+
+      .image-top-bar {
+        padding: 1rem 1.25rem;
+      }
+
+      .image-bottom-caption {
+        padding: 1rem 1.25rem;
+      }
+
+      .college-title {
+        font-size: 1.25rem;
+      }
+
+      .college-desc {
+        display: none;
+      }
+
+      .login-form-pane {
+        width: 100%;
+        flex: 1 1 auto;
+        min-height: auto;
+        padding: 2rem 1.5rem 3rem 1.5rem;
+        border-left: none;
+      }
+
+      .login-form-wrapper {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body class="login-split-page">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Left Half: College Entrance Photo -->
+  <aside class="login-image-pane" aria-label="College Campus Entrance">
+    <img 
+      src="assets/images/easwari-entrance.jpg" 
+      alt="Easwari Engineering College Main Entrance"
+      fetchpriority="high"
+      loading="eager"
+    >
+    <div class="login-image-overlay"></div>
+
+    <div class="image-top-bar">
+      <div class="college-tag">
+        <i data-icon="building-2"></i>
+        <span>Easwari Engineering College</span>
+      </div>
+    </div>
+
+    <div class="image-bottom-caption">
+      <span class="college-subtag">SRM Group of Institutions</span>
+      <h2 class="college-title">Smart Campus Operations</h2>
+      <p class="college-desc">Unified Infrastructure Problem Reporting & Maintenance Platform for Students, Engineering Staff, and Administration.</p>
+    </div>
+  </aside>
+
+  <!-- Right Half: Smart Campus Login Form -->
+  <main id="main-content" class="login-form-pane">
+    <div class="login-form-wrapper">
+      
+      <!-- Smart Campus Branding -->
+      <div class="login-brand-header">
+        <div class="login-brand-title">
+          <i data-icon="shield"></i>
+          <span>Smart Campus Operations</span>
+        </div>
+      </div>
+
+      <!-- Heading -->
+      <h1 class="auth-title">Sign In to Campus Portal</h1>
+      <p class="auth-subtitle">Enter your institutional credentials to access your designated portal.</p>
+
+      <!-- Live Error Alert Box -->
+      <div id="loginAlert" class="alert alert-danger" style="display: none; margin-bottom: 1.5rem; font-size: 0.85rem;" role="alert">
+        <i data-icon="alert-triangle"></i>
+        <span id="loginAlertText">Invalid email address or password.</span>
+      </div>
+
+      <!-- Authentication Form -->
+      <form id="loginForm" novalidate autocomplete="on">
+        <!-- Email Input -->
+        <div class="form-group">
+          <label class="form-label" for="emailInput">
+            Institutional Email Address <span class="required">*</span>
+          </label>
+          <input 
+            type="email" 
+            id="emailInput" 
+            class="form-control" 
+            placeholder="e.g. student@smartcampus.edu" 
+            required
+            autocomplete="email"
+            autofocus
+          >
+          <div class="form-error" id="emailError" style="display: none; color: var(--color-danger); font-size: 0.8rem; margin-top: 4px;">Please enter a valid email address.</div>
+        </div>
+
+        <!-- Password Input with Show/Hide -->
+        <div class="form-group">
+          <label class="form-label" for="passwordInput">
+            Password <span class="required">*</span>
+          </label>
+          <div class="password-input-group">
+            <input 
+              type="password" 
+              id="passwordInput" 
+              class="form-control" 
+              placeholder="Enter your password" 
+              required
+              autocomplete="current-password"
+            >
+            <button 
+              type="button" 
+              class="password-toggle-btn" 
+              id="togglePasswordBtn" 
+              aria-label="Show password"
+              title="Show or hide password"
+            >
+              <i data-icon="eye"></i>
+            </button>
+          </div>
+          <div class="form-error" id="passwordError" style="display: none; color: var(--color-danger); font-size: 0.8rem; margin-top: 4px;">Password is required.</div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-login" id="submitBtn">
+          <span>Authenticate &amp; Continue</span>
+          <i data-icon="arrow-right"></i>
+        </button>
+      </form>
+
+      <!-- Portal Info Chips -->
+      <div class="login-portal-chips">
+        <span class="login-portal-chips-label">Available Portals &bull; Automatic Role Routing</span>
+        <div class="portal-chip-list">
+          <span class="portal-chip">Student</span>
+          <span class="portal-chip">Electrical</span>
+          <span class="portal-chip">Plumbing</span>
+          <span class="portal-chip">Cleaning</span>
+          <span class="portal-chip">IT &amp; Tech</span>
+          <span class="portal-chip">Administration</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      renderAllIcons();
+
+      // If already authenticated with valid token, redirect directly to authorized portal
+      const existingUser = authManager.getCurrentUser();
+      if (existingUser && existingUser.token && existingUser.portalUrl) {
+        window.location.replace(existingUser.portalUrl);
+        return;
+      }
+
+      // Password visibility toggle
+      const passwordInput = document.getElementById("passwordInput");
+      const togglePasswordBtn = document.getElementById("togglePasswordBtn");
+
+      togglePasswordBtn.addEventListener("click", () => {
+        const isPassword = passwordInput.type === "password";
+        passwordInput.type = isPassword ? "text" : "password";
+        togglePasswordBtn.innerHTML = isPassword ? getIconSvg("eye-off") : getIconSvg("eye");
+        togglePasswordBtn.setAttribute("aria-label", isPassword ? "Hide password" : "Show password");
+      });
+
+      // Login form handler
+      const loginForm = document.getElementById("loginForm");
+      const submitBtn = document.getElementById("submitBtn");
+      const alertBox = document.getElementById("loginAlert");
+      const alertText = document.getElementById("loginAlertText");
+      const emailInput = document.getElementById("emailInput");
+
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        alertBox.style.display = "none";
+
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        const rememberMe = true;
+
+        if (!email || !password) {
+          showAlert("Please provide both email address and password.");
+          return;
+        }
+
+        // Show loading state
+        submitBtn.disabled = true;
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.innerHTML = `${getIconSvg("refresh")} <span>Authenticating...</span>`;
+
+        try {
+          const authRes = await apiClient.login(email, password);
+
+          if (!authRes.success || !authRes.token) {
+            throw new Error(authRes.message || "Authentication failed.");
+          }
+
+          // Save authentic session with server-generated token & role
+          authManager.saveSession(authRes, rememberMe);
+
+          // Server determines the authorized destination
+          const targetUrl = authRes.portalUrl || "student/index.html";
+          window.location.replace(targetUrl);
+
+        } catch (err) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnText;
+          renderAllIcons();
+          showAlert(err.message || "Invalid email address or password.");
+        }
+      });
+
+      function showAlert(msg) {
+        alertText.textContent = msg;
+        alertBox.style.display = "flex";
+        renderAllIcons();
+      }
+    });
+  </script>
+</body>
+</html>
