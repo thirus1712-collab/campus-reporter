@@ -2,11 +2,11 @@
  * Smart Campus Infrastructure Problem Reporter
  * Central API Client Wrapper (Spring Boot REST Communication)
  *
- * Base URL: http://localhost:8080/api
+ * Base URL: https://campus-reporter-backend.onrender.com/api
  */
 
 const API_CONFIG = {
-  baseUrl: "http://localhost:8080/api",
+  baseUrl: "https://campus-reporter-backend.onrender.com/api",
   timeoutMs: 45000
 };
 
@@ -332,3 +332,4 @@ const apiClient = {
     });
   }
 };
+
